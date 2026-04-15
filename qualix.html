@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>QUALIX</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#03050f;--panel:#080d1e;--card:#0c1429;--card2:#0f1a35;--border:rgba(0,180,255,.1);--border2:rgba(0,180,255,.2);--accent:#00c8ff;--violet:#7c3aed;--green:#10b981;--amber:#f59e0b;--red:#ef4444;--pink:#ec4899;--text:#e2e8f0;--muted:#4a5568;--muted2:#64748b;}
+html,body{width:100%;height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--text);overflow:hidden;}
+.page{display:none;width:100%;height:100vh;}.page.active{display:flex;}
+#homePage{flex-direction:column;position:relative;overflow:hidden;}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.18),transparent 70%);top:-150px;left:-150px;animation:orbf 9s ease-in-out infinite;}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(0,200,255,.15),transparent 70%);bottom:-100px;right:-100px;animation:orbf 9s ease-in-out infinite;animation-delay:-4.5s;}
+.orb3{width:300px;height:300px;background:radial-gradient(circle,rgba(16,185,129,.1),transparent 70%);top:45%;left:48%;animation:orbf 9s ease-in-out infinite;animation-delay:-2s;}
+@keyframes orbf{0%,100%{transform:translate(0,0);}33%{transform:translate(25px,-18px);}66%{transform:translate(-18px,22px);}}
+.grid-floor{position:fixed;bottom:0;left:0;width:100%;height:50%;z-index:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,200,255,.06) 1px,transparent 1px) 0 0/70px 70px,linear-gradient(0deg,rgba(0,200,255,.06) 1px,transparent 1px) 0 0/70px 70px;-webkit-mask-image:linear-gradient(to top,rgba(0,0,0,.4),transparent);mask-image:linear-gradient(to top,rgba(0,0,0,.4),transparent);transform:perspective(800px) rotateX(58deg);transform-origin:bottom center;}
+.scanline{position:fixed;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(180deg,transparent,transparent 3px,rgba(0,200,255,.012) 3px,rgba(0,200,255,.012) 4px);}
+#fxCanvas{position:fixed;inset:0;z-index:1;pointer-events:none;}
+.h-header{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;border-bottom:1px solid var(--border);background:rgba(3,5,15,.6);backdrop-filter:blur(20px);}
+.h-logo{display:flex;align-items:center;gap:12px;cursor:pointer;}
+.h-logomark{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--violet),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;animation:pulse 3s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(0,200,255,.35);}50%{box-shadow:0 0 40px rgba(0,200,255,.6);}}
+.h-logoname{font-size:18px;font-weight:900;letter-spacing:4px;color:#fff;}.h-logoname span{color:var(--accent);}
+.nav-pill{padding:6px 16px;border-radius:99px;font-size:12px;font-weight:600;border:1px solid var(--border);color:var(--muted2);cursor:pointer;}
+.nav-badge{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);font-size:11px;font-weight:600;color:var(--green);}
+.blinkA{animation:blinkA 2s infinite;}
+@keyframes blinkA{0%,100%{opacity:1;}50%{opacity:.3;}}
+.btn-signup{padding:7px 16px;border-radius:8px;background:transparent;border:1px solid rgba(0,200,255,.25);color:var(--accent);font-size:12px;font-weight:700;cursor:pointer;}
+.btn-signin{display:flex;align-items:center;gap:7px;padding:7px 16px;border-radius:8px;background:linear-gradient(135deg,rgba(0,200,255,.15),rgba(124,58,237,.15));border:1px solid rgba(0,200,255,.3);color:#fff;font-size:12px;font-weight:700;cursor:pointer;position:relative;}
+.btn-signin.signed-in{background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(0,200,255,.1));border-color:rgba(16,185,129,.45);}
+.signin-avatar{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--accent));display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;}
+.signin-pulse{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid var(--bg);animation:blinkA 2s infinite;}
+.btn-admin{display:flex;align-items:center;gap:7px;padding:7px 16px;border-radius:8px;background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.35);color:rgba(167,139,250,.9);font-size:12px;font-weight:700;cursor:pointer;}
+.h-hero{flex:1;position:relative;z-index:10;display:flex;align-items:center;justify-content:center;padding:0 40px;gap:60px;}
+.h-left{max-width:560px;flex:1;}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:99px;border:1px solid rgba(0,200,255,.25);background:rgba(0,200,255,.07);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:24px;}
+h1.hero-h{font-size:52px;font-weight:900;line-height:1.08;letter-spacing:-2px;color:#fff;margin-bottom:20px;}
+h1.hero-h .grad{background:linear-gradient(90deg,var(--accent) 0%,var(--violet) 60%,var(--accent) 120%);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite;}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+.hero-sub{font-size:16px;color:rgba(148,163,184,.85);line-height:1.75;margin-bottom:36px;max-width:480px;}
+.cta-row{display:flex;align-items:center;gap:12px;}
+.btn-primary{display:flex;align-items:center;gap:8px;padding:13px 28px;border-radius:12px;background:linear-gradient(135deg,var(--violet),var(--accent));border:none;color:#fff;font-weight:700;font-size:14px;cursor:pointer;transition:all .3s;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(0,200,255,.4);}
+.btn-ghost{padding:13px 24px;border-radius:12px;background:transparent;border:1px solid rgba(0,200,255,.25);color:var(--accent);font-weight:600;font-size:14px;cursor:pointer;}
+.cursor-blink{display:inline-block;width:3px;height:.85em;background:var(--accent);border-radius:1px;vertical-align:middle;margin-left:2px;animation:cur .9s step-end infinite;}
+@keyframes cur{0%,100%{opacity:1;}50%{opacity:0;}}
+.h-right{width:420px;flex-shrink:0;position:relative;height:400px;}
+.browser{position:absolute;top:0;left:30px;width:340px;background:rgba(8,13,30,.92);border:1px solid rgba(0,200,255,.2);border-radius:14px;overflow:hidden;animation:bF 5s ease-in-out infinite;}
+@keyframes bF{0%,100%{transform:rotateY(-8deg) rotateX(4deg) translateY(0);}50%{transform:rotateY(-8deg) rotateX(4deg) translateY(-10px);}}
+.bbar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(3,5,15,.8);border-bottom:1px solid rgba(0,200,255,.1);}
+.dr{width:9px;height:9px;border-radius:50%;background:#ef4444;opacity:.7;}
+.dy{width:9px;height:9px;border-radius:50%;background:#f59e0b;opacity:.7;}
+.dg{width:9px;height:9px;border-radius:50%;background:#10b981;opacity:.7;}
+.burl{flex:1;height:20px;background:rgba(255,255,255,.05);border-radius:4px;margin:0 8px;display:flex;align-items:center;padding:0 8px;font-size:9px;color:var(--muted2);}
+.bcontent{padding:14px;min-height:220px;}
+.li-h{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.li-logo{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#0077b5,#00a0dc);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;}
+.li-s{flex:1;height:22px;background:rgba(255,255,255,.06);border-radius:4px;}
+.li-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:10px 12px;position:relative;overflow:hidden;margin-bottom:8px;}
+.li-ch{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.li-av{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--accent));}
+.li-n{width:60px;height:5px;background:rgba(255,255,255,.2);border-radius:3px;}
+.li-r{width:40px;height:4px;background:rgba(255,255,255,.1);border-radius:3px;margin-top:3px;}
+.li-l{height:4px;background:rgba(255,255,255,.08);border-radius:3px;margin-bottom:5px;}
+.ab{position:absolute;top:6px;right:6px;padding:3px 8px;border-radius:99px;font-size:8px;font-weight:700;text-transform:uppercase;}
+.ab-pass{background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.4);color:var(--green);}
+.ab-audit{background:rgba(0,200,255,.15);border:1px solid rgba(0,200,255,.35);color:var(--accent);}
+.ab-warn{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.35);color:var(--amber);}
+.li-card.scanning::after{content:'';position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:scan 2s ease-in-out infinite;}
+@keyframes scan{0%{top:0;opacity:0;}20%{opacity:.8;}80%{opacity:.8;}100%{top:100%;opacity:0;}}
+.pw{height:3px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;margin-top:6px;}
+.pb{height:100%;border-radius:99px;animation:pg 3s ease-in-out infinite;}
+.pb-b{background:var(--accent);}.pb-g{background:var(--green);animation-delay:-.8s;}.pb-a{background:var(--amber);animation-delay:-1.6s;}
+@keyframes pg{0%{width:0%;}60%{width:85%;}100%{width:100%;}}
+.phone{position:absolute;bottom:10px;right:0;width:110px;background:rgba(8,13,30,.95);border:1px solid rgba(124,58,237,.3);border-radius:20px;overflow:hidden;animation:pF 5s ease-in-out infinite;animation-delay:-2.5s;}
+@keyframes pF{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.phone-notch{width:30px;height:6px;background:rgba(0,0,0,.8);border-radius:3px;margin:8px auto;}
+.phone-content{padding:8px;}
+.pblock{height:36px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;margin-bottom:6px;padding:6px 8px;}
+.pbl{height:3px;background:rgba(255,255,255,.15);border-radius:2px;margin-bottom:3px;}
+.pscore{font-size:10px;font-weight:800;color:var(--green);text-align:center;margin-top:2px;}
+.data-chip{position:absolute;padding:8px 14px;background:rgba(8,13,30,.92);border-radius:10px;border:1px solid;font-size:11px;font-weight:600;white-space:nowrap;animation:cF 4s ease-in-out infinite;}
+.chip1{top:30px;right:-10px;border-color:rgba(16,185,129,.4);color:var(--green);}
+.chip2{bottom:90px;left:-20px;border-color:rgba(245,158,11,.4);color:var(--amber);animation-delay:-1.5s;}
+.chip3{bottom:40px;left:40px;border-color:rgba(0,200,255,.3);color:var(--accent);animation-delay:-3s;font-size:10px;}
+@keyframes cF{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.bottom-bar{position:relative;z-index:10;padding:14px 40px;display:flex;align-items:center;gap:10px;justify-content:center;border-top:1px solid var(--border);background:rgba(3,5,15,.5);}
+.surface-tag{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;border:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted2);}
+.surface-icon{width:7px;height:7px;border-radius:50%;}
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(3,5,15,.88);backdrop-filter:blur(18px);display:none;align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:rgba(8,13,30,.97);border:1px solid rgba(0,200,255,.2);border-radius:22px;padding:36px 32px;position:relative;overflow:hidden;animation:mIn .35s cubic-bezier(.34,1.4,.64,1);}
+@keyframes mIn{from{opacity:0;transform:scale(.92) translateY(20px);}to{opacity:1;transform:none;}}
+.mglow{position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(0,200,255,.12),transparent 70%);pointer-events:none;}
+.m-close{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:4px 8px;}
+.m-title{font-size:20px;font-weight:800;color:#fff;text-align:center;margin-bottom:6px;}
+.m-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px;}
+.divrow{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.divline{flex:1;height:1px;background:var(--border);}
+.divtxt{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.m-footer{text-align:center;margin-top:18px;font-size:11px;color:var(--muted);}
+.field-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.field-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.18);border-radius:10px;padding:11px 14px;color:var(--text);font-size:14px;outline:none;transition:border-color .25s;font-family:'Inter',sans-serif;}
+.field-input:focus{border-color:rgba(0,200,255,.5);}
+.field-input::placeholder{color:var(--muted);}
+.btn-login{width:100%;padding:12px;border-radius:10px;background:linear-gradient(135deg,var(--violet),var(--accent));border:none;color:#fff;font-weight:700;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;}
+.btn-back{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;margin-top:8px;text-decoration:underline;display:block;text-align:center;}
+.error-msg{font-size:12px;color:#f87171;text-align:center;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:8px 12px;display:none;}
+.role-card{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:13px;border:1px solid rgba(0,200,255,.12);background:rgba(255,255,255,.025);cursor:pointer;transition:all .25s;margin-bottom:10px;}
+.role-card:hover{transform:translateY(-2px);}
+.role-card.mgr:hover{border-color:rgba(124,58,237,.45);}
+.role-card.tst:hover{border-color:rgba(0,200,255,.45);}
+.role-card.aud:hover{border-color:rgba(16,185,129,.45);}
+.role-card.locked{opacity:.35;cursor:not-allowed;}
+.role-card.locked:hover{transform:none;}
+.ri{width:42px;height:42px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;}
+.ri-mgr{background:linear-gradient(135deg,rgba(124,58,237,.28),rgba(124,58,237,.1));}
+.ri-tst{background:linear-gradient(135deg,rgba(0,200,255,.28),rgba(0,200,255,.1));}
+.ri-aud{background:linear-gradient(135deg,rgba(16,185,129,.28),rgba(16,185,129,.1));}
+.rtw{flex:1;}.rt-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;}.rt-desc{font-size:11px;color:var(--muted);}
+.r-arrow{font-size:18px;color:var(--muted);}
+.lock-tag{font-size:10px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#f87171;padding:2px 8px;border-radius:99px;}
+.sib{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.sib-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--accent));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;}
+.btn-signout{padding:5px 12px;border-radius:7px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171;font-size:11px;font-weight:700;cursor:pointer;}
+.atab{padding:6px 16px;border-radius:8px;font-size:12px;font-weight:600;border:1px solid var(--border);color:var(--muted2);cursor:pointer;}
+.atab.active{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.45);color:rgba(167,139,250,.9);}
+.user-table{width:100%;border-collapse:collapse;}
+.user-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);}
+.user-table td{padding:11px 12px;border-bottom:1px solid rgba(0,200,255,.06);font-size:13px;vertical-align:middle;}
+.ua{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.sp{display:inline-block;padding:3px 10px;border-radius:99px;font-size:10px;font-weight:700;text-transform:uppercase;}
+.sp-act{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:var(--green);}
+.sp-inact{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#f87171;}
+.ab2{padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid;}
+.ab-rev{border-color:rgba(239,68,68,.3);color:#f87171;background:rgba(239,68,68,.08);}
+.ab-rst{border-color:rgba(16,185,129,.3);color:var(--green);background:rgba(16,185,129,.08);}
+#addUF{background:rgba(0,200,255,.04);border:1px solid rgba(0,200,255,.12);border-radius:12px;padding:18px;margin-bottom:18px;display:none;}
+#addUF.open{display:block;}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.fi2{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.18);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;}
+.fs{width:100%;background:rgba(8,13,30,.9);border:1px solid rgba(0,200,255,.18);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;cursor:pointer;}
+#managerPage,#testerPage,#auditorPage{overflow:hidden;}
+.app{display:flex;height:100vh;width:100%;}
+.sidebar{width:220px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:56px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;}
+.dash-content{flex:1;overflow-y:auto;padding:24px;scrollbar-width:thin;scrollbar-color:rgba(0,200,255,.2) transparent;}
+.dash-content::-webkit-scrollbar{width:4px;}
+.dash-content::-webkit-scrollbar-thumb{background:rgba(0,200,255,.2);border-radius:99px;}
+.sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px;border-bottom:1px solid var(--border);cursor:pointer;}
+.sb-logomark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--violet),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;}
+.sb-logotxt{font-size:15px;font-weight:900;letter-spacing:3px;color:#fff;}.sb-logotxt span{color:var(--accent);}
+.sb-section{padding:10px 10px 4px;font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-top:6px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:8px;margin:2px 8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted2);transition:all .2s;border:1px solid transparent;}
+.sb-item:hover{background:rgba(0,200,255,.05);color:var(--text);}
+.sb-item.active{background:rgba(0,200,255,.1);border-color:rgba(0,200,255,.2);color:var(--accent);}
+.sb-icon{font-size:14px;width:18px;text-align:center;}
+.sb-badge{margin-left:auto;padding:2px 7px;border-radius:99px;font-size:9px;font-weight:800;background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.35);color:#f87171;}
+.sb-badge.g{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.3);color:var(--green);}
+.sb-user{padding:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;margin-top:auto;}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--accent));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+.sb-userinfo{flex:1;min-width:0;}.sb-username{font-size:12px;font-weight:700;}.sb-userrole{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.tb-title{font-size:16px;font-weight:800;color:#fff;}
+.tb-right{display:flex;align-items:center;gap:8px;}
+.site-toggle{display:flex;background:rgba(0,0,0,.3);border:1px solid var(--border2);border-radius:8px;overflow:hidden;}
+.site-btn{padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--muted2);font-family:'Inter',sans-serif;}
+.site-btn.active{background:rgba(0,200,255,.15);color:var(--accent);}
+.tb-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid;font-family:'Inter',sans-serif;}
+.btn-exp{background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(0,200,255,.1));border-color:rgba(124,58,237,.4);color:rgba(167,139,250,.9);}
+.btn-upl{background:linear-gradient(135deg,rgba(0,200,255,.15),rgba(16,185,129,.08));border-color:rgba(0,200,255,.35);color:var(--accent);}
+.qr-btn{padding:3px 8px;border-radius:5px;border:1px solid rgba(0,200,255,.2);background:transparent;color:#64748b;font-size:10px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;}
+.qr-btn.qr-active{background:rgba(0,200,255,.15);color:var(--accent);border-color:rgba(0,200,255,.45);}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.5;cursor:pointer;}
+.section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.section-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:8px;}
+.section-title::before{content:'';display:block;width:3px;height:14px;border-radius:2px;background:linear-gradient(180deg,var(--accent),var(--violet));}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:22px;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.kpi-label{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:6px;}
+.kpi-val{font-size:26px;font-weight:900;letter-spacing:-1px;}
+.kpi-sub{font-size:10px;color:var(--muted);margin-top:4px;}
+.kpi-trend{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;margin-top:4px;padding:2px 6px;border-radius:4px;}
+.t-up{background:rgba(16,185,129,.15);color:var(--green);}.t-warn{background:rgba(245,158,11,.12);color:var(--amber);}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;}
+.grid-65{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:20px;}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden;}
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);}
+.tbl td{padding:10px;border-bottom:1px solid rgba(0,200,255,.04);font-size:12px;vertical-align:middle;}
+.tbl tr:last-child td{border-bottom:none;}.tbl tr:hover td{background:rgba(0,200,255,.025);}
+.pill{display:inline-block;padding:3px 9px;border-radius:99px;font-size:9px;font-weight:800;text-transform:uppercase;}
+.p-new{background:rgba(0,200,255,.12);border:1px solid rgba(0,200,255,.3);color:var(--accent);}
+.p-pending{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--amber);}
+.p-audited{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:var(--green);}
+.p-disputed{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red);}
+.p-atrisk{background:rgba(236,72,153,.15);border:1px solid rgba(236,72,153,.35);color:var(--pink);}
+.p-closed{background:rgba(100,116,139,.12);border:1px solid rgba(100,116,139,.25);color:var(--muted2);}
+.sbar-bg{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden;}
+.sbar-fill{height:100%;border-radius:99px;}
+.clock-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;}
+.cc{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:var(--red);}
+.cw{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);color:var(--amber);}
+.sla-bar{height:4px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:3px;}
+.sla-fill{height:100%;border-radius:99px;}
+.at-risk-hd{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.at-risk-alert{padding:3px 10px;border-radius:6px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:var(--red);font-size:10px;font-weight:800;}
+.fl{display:flex;align-items:center;gap:8px;}
+.av-sm{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;}
+.tag{padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;}
+.pareto-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.pareto-lbl{font-size:11px;color:var(--muted2);min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pareto-bg{flex:1;height:18px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden;}
+.pareto-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:700;}
+.hm-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:10px;}
+.hm-cell{height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;cursor:pointer;color:#fff;}
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;padding:10px 0;}
+.drop-zone{border:2px dashed rgba(0,200,255,.25);border-radius:12px;padding:32px;text-align:center;background:rgba(0,200,255,.03);cursor:pointer;}
+.vrow{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:12px;margin-bottom:6px;}
+.vp{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);}
+.vf{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);}
+.vw{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);}
+.crit-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(0,200,255,.07);}
+.crit-row:last-child{border-bottom:none;}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:rgba(255,255,255,.1);outline:none;cursor:pointer;width:100%;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="homePage" class="page active">
+  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+  <div class="grid-floor"></div><div class="scanline"></div>
+  <canvas id="fxCanvas"></canvas>
+  <header class="h-header">
+    <div class="h-logo"><div class="h-logomark">Q</div><div class="h-logoname">QUALI<span>X</span></div></div>
+    <nav style="display:flex;align-items:center;gap:6px;">
+      <div class="nav-pill">Platform</div><div class="nav-pill">Workflows</div><div class="nav-pill">Insights</div><div class="nav-pill">Docs</div>
+      <div class="nav-badge" style="margin-left:8px;"><div class="blinkA" style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;"></div>Live v2.5</div>
+    </nav>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="btn-signup" onclick="openSignup()">Sign Up</button>
+      <button class="btn-signin" id="signinBtn" onclick="openLogin()"><span id="signinIcon">👤</span><span id="signinLabel">Sign In</span></button>
+      <button class="btn-admin" onclick="openAdmin()">⚙ Admin</button>
+    </div>
+  </header>
+  <div class="h-hero">
+    <div class="h-left">
+      <div class="eyebrow"><div class="blinkA" style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;"></div>LinkedIn Product Quality Audit</div>
+      <h1 class="hero-h">Quality that<br><span class="grad">ships faster.</span><span class="cursor-blink"></span></h1>
+      <p class="hero-sub">End-to-end audit workflows for every surface — web feeds, mobile apps, feature flags, A/B tests, and API layers.</p>
+      <div class="cta-row">
+        <button class="btn-primary" onclick="openLogin()">Choose Your Role →</button>
+        <button class="btn-ghost">Watch Demo</button>
+      </div>
+    </div>
+    <div class="h-right">
+      <div style="position:relative;width:100%;height:100%;perspective:1200px;">
+        <div class="browser">
+          <div class="bbar"><div class="dr"></div><div class="dy"></div><div class="dg"></div><div class="burl">app.linkedin.com/feed · QA Mode</div></div>
+          <div class="bcontent">
+            <div class="li-h"><div class="li-logo">in</div><div class="li-s"></div></div>
+            <div class="li-card scanning"><div class="li-ch"><div class="li-av"></div><div><div class="li-n"></div><div class="li-r"></div></div></div><div class="li-l" style="width:90%;"></div><div class="li-l" style="width:80%;"></div><div class="pw"><div class="pb pb-b"></div></div><div class="ab ab-audit">Auditing</div></div>
+            <div class="li-card"><div class="li-ch"><div class="li-av" style="background:linear-gradient(135deg,#10b981,#059669)"></div><div><div class="li-n"></div><div class="li-r"></div></div></div><div class="li-l" style="width:80%;"></div><div class="pw"><div class="pb pb-g"></div></div><div class="ab ab-pass">Pass</div></div>
+            <div class="li-card"><div class="li-ch"><div class="li-av" style="background:linear-gradient(135deg,#f59e0b,#d97706)"></div><div><div class="li-n"></div><div class="li-r"></div></div></div><div class="li-l" style="width:90%;"></div><div class="pw"><div class="pb pb-a"></div></div><div class="ab ab-warn">Review</div></div>
+          </div>
+        </div>
+        <div class="phone"><div class="phone-notch"></div><div class="phone-content"><div class="pblock"><div class="pbl"></div><div class="pbl" style="width:60%"></div></div><div style="text-align:center;padding:6px 0;"><div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Score</div><div class="pscore">87%</div></div></div></div>
+        <div class="data-chip chip1">✓ Feature Flag: ON · 98%</div>
+        <div class="data-chip chip2">⚡ 3 A/B variants live</div>
+        <div class="data-chip chip3">◉ API latency 142ms</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <div class="surface-tag"><div class="surface-icon" style="background:#0077b5;"></div>Web Feed</div>
+    <div class="surface-tag"><div class="surface-icon" style="background:var(--violet);"></div>Mobile iOS</div>
+    <div class="surface-tag"><div class="surface-icon" style="background:var(--accent);"></div>Mobile Android</div>
+    <div class="surface-tag"><div class="surface-icon" style="background:var(--green);"></div>Feature Flags</div>
+    <div class="surface-tag"><div class="surface-icon" style="background:var(--amber);"></div>A/B Tests</div>
+    <div class="surface-tag"><div class="surface-icon" style="background:#ec4899;"></div>API Layer</div>
+  </div>
+</div>
+
+<!-- MANAGER -->
+<div id="managerPage" class="page">
+  <div class="app">
+    <div class="sidebar">
+      <div class="sb-logo" onclick="goHome()"><div class="sb-logomark">Q</div><div class="sb-logotxt">QUALI<span>X</span></div></div>
+      <div class="sb-section">Manager</div>
+      <div class="sb-item active" onclick="showView('overview')"><span class="sb-icon">◈</span> Overview</div>
+      <div class="sb-item" onclick="showView('ingest')"><span class="sb-icon">⬆</span> Data Ingest <span class="sb-badge g">New</span></div>
+      <div class="sb-item" onclick="showView('assign')"><span class="sb-icon">◉</span> Assignment</div>
+      <div class="sb-item" onclick="showView('disputes')"><span class="sb-icon">⚡</span> Disputes <span class="sb-badge" id="dBadge">6</span></div>
+      <div class="sb-item" onclick="showView('agents')"><span class="sb-icon">👥</span> Agent Scores</div>
+      <div class="sb-item" onclick="showView('errors')"><span class="sb-icon">◎</span> Error Taxonomy</div>
+      <div class="sb-item" onclick="showView('velocity')"><span class="sb-icon">◈</span> Weekly Velocity</div>
+      <div class="sb-section">Reports</div>
+      <div class="sb-item" onclick="showView('bottleneck')"><span class="sb-icon">⚠</span> Bottleneck</div>
+      <div class="sb-item" onclick="exportPPT()"><span class="sb-icon">📊</span> Export PPT</div>
+      <div style="margin:8px 8px 0;border-radius:10px;overflow:hidden;border:1px solid rgba(0,200,255,.2);background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(0,200,255,.07));">
+        <div onclick="toggleSideAI()" style="display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer;">
+          <div style="width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#00c8ff);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🤖</div>
+          <div style="flex:1;min-width:0;"><div style="font-size:11px;font-weight:800;color:#fff;">PQE AI Agent</div><div style="font-size:9px;color:#10b981;display:flex;align-items:center;gap:3px;margin-top:2px;"><span class="blinkA" style="width:5px;height:5px;border-radius:50%;background:#10b981;display:inline-block;"></span>Live</div></div>
+          <div id="aiChev" style="color:#64748b;font-size:13px;transition:transform .3s;">▾</div>
+        </div>
+        <div id="aiPanel" style="display:none;border-top:1px solid rgba(0,200,255,.12);">
+          <div id="aiMsgs" style="height:180px;overflow-y:auto;padding:10px;scrollbar-width:thin;">
+            <div style="display:flex;gap:6px;margin-bottom:8px;"><div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#00c8ff);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;flex-shrink:0;">AI</div><div style="background:#0f1a35;border:1px solid rgba(0,200,255,.1);border-radius:0 10px 10px 10px;padding:8px 10px;font-size:11px;color:#e2e8f0;line-height:1.5;">Hi! Ask about scores, disputes, or agents.</div></div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div onclick="aiAsk('Avg score?')" style="padding:4px 8px;border-radius:6px;border:1px solid rgba(0,200,255,.2);background:rgba(0,200,255,.05);color:#00c8ff;font-size:10px;font-weight:600;cursor:pointer;">Avg score?</div>
+              <div onclick="aiAsk('At-risk disputes?')" style="padding:4px 8px;border-radius:6px;border:1px solid rgba(0,200,255,.2);background:rgba(0,200,255,.05);color:#00c8ff;font-size:10px;font-weight:600;cursor:pointer;">At-risk disputes?</div>
+              <div onclick="aiAsk('Top errors?')" style="padding:4px 8px;border-radius:6px;border:1px solid rgba(0,200,255,.2);background:rgba(0,200,255,.05);color:#00c8ff;font-size:10px;font-weight:600;cursor:pointer;">Top errors?</div>
+              <div onclick="aiAsk('Manila vs India?')" style="padding:4px 8px;border-radius:6px;border:1px solid rgba(0,200,255,.2);background:rgba(0,200,255,.05);color:#00c8ff;font-size:10px;font-weight:600;cursor:pointer;">Manila vs India?</div>
+            </div>
+          </div>
+          <div style="padding:8px;border-top:1px solid rgba(0,200,255,.08);display:flex;gap:6px;">
+            <input id="aiInput" type="text" placeholder="Ask…" onkeydown="if(event.key==='Enter')aiAsk()" style="flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(0,200,255,.15);border-radius:7px;padding:7px 9px;color:#e2e8f0;font-size:11px;font-family:'Inter',sans-serif;outline:none;min-width:0;"/>
+            <button onclick="aiAsk()" style="width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#7c3aed,#00c8ff);border:none;color:#fff;font-size:13px;cursor:pointer;">↑</button>
+          </div>
+        </div>
+      </div>
+      <div class="sb-user"><div class="sb-avatar" id="sbAvatar">MI</div><div class="sb-userinfo"><div class="sb-username" id="sbName">Meera Iyer</div><div class="sb-userrole">Manager</div></div></div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <div class="tb-title" id="viewTitle">Program Overview</div>
+        <div class="tb-right">
+          <div id="drw" style="display:none;align-items:center;gap:6px;background:rgba(0,0,0,.3);border:1px solid rgba(0,200,255,.18);border-radius:8px;padding:5px 10px;">
+            <span style="font-size:11px;color:#64748b;">📅</span>
+            <input type="date" id="dateFrom" value="2024-01-01" onchange="applyDR()" style="background:transparent;border:none;color:#e2e8f0;font-size:11px;font-family:'Inter',sans-serif;outline:none;cursor:pointer;width:110px;"/>
+            <span style="font-size:11px;color:#64748b;">→</span>
+            <input type="date" id="dateTo" value="2024-01-31" onchange="applyDR()" style="background:transparent;border:none;color:#e2e8f0;font-size:11px;font-family:'Inter',sans-serif;outline:none;cursor:pointer;width:110px;"/>
+            <div style="display:flex;gap:3px;">
+              <button onclick="setQR('7d',this)" class="qr-btn">7D</button>
+              <button onclick="setQR('30d',this)" class="qr-btn qr-active">30D</button>
+              <button onclick="setQR('90d',this)" class="qr-btn">90D</button>
+              <button onclick="setQR('all',this)" class="qr-btn">All</button>
+            </div>
+          </div>
+          <div class="site-toggle">
+            <button class="site-btn active" onclick="setSite('ALL',this)">All Sites</button>
+            <button class="site-btn" onclick="setSite('Manila',this)">Manila</button>
+            <button class="site-btn" onclick="setSite('India',this)">India</button>
+          </div>
+          <button class="tb-btn btn-upl" onclick="openUpload()">⬆ Upload</button>
+          <button class="tb-btn btn-exp" onclick="exportPPT()">📊 Export</button>
+        </div>
+      </div>
+      <div class="dash-content" id="dashContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TESTER -->
+<div id="testerPage" class="page">
+  <div class="app">
+    <div class="sidebar">
+      <div class="sb-logo" onclick="goHome()"><div class="sb-logomark">Q</div><div class="sb-logotxt">QUALI<span>X</span></div></div>
+      <div class="sb-section">Tester</div>
+      <div class="sb-item active" onclick="showTV('mycases')"><span class="sb-icon">📋</span> My Cases</div>
+      <div class="sb-item" onclick="showTV('completed')"><span class="sb-icon">✓</span> Completed</div>
+      <div class="sb-item" onclick="showTV('disputes')"><span class="sb-icon">⚡</span> My Disputes</div>
+      <div class="sb-user"><div class="sb-avatar" id="tAv">AP</div><div class="sb-userinfo"><div class="sb-username" id="tNm">Arjun Patel</div><div class="sb-userrole">Tester</div></div></div>
+    </div>
+    <div class="main">
+      <div class="topbar"><div class="tb-title" id="tTitle">My Cases</div><div class="tb-right"><div style="padding:5px 12px;border-radius:8px;background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);font-size:12px;color:var(--accent);">Jan 2024 Cycle</div></div></div>
+      <div class="dash-content" id="tContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- AUDITOR -->
+<div id="auditorPage" class="page">
+  <div class="app">
+    <div class="sidebar">
+      <div class="sb-logo" onclick="goHome()"><div class="sb-logomark">Q</div><div class="sb-logotxt">QUALI<span>X</span></div></div>
+      <div class="sb-section">Auditor</div>
+      <div class="sb-item active" onclick="showAV('workflow')"><span class="sb-icon">📊</span> Workflow Tracker</div>
+      <div class="sb-item" onclick="showAV('mybin')"><span class="sb-icon">📥</span> My Bin <span class="sb-badge g" id="binBadge">3</span></div>
+      <div class="sb-item" onclick="showAV('associates')"><span class="sb-icon">👥</span> My Associates</div>
+      <div class="sb-item" onclick="showAV('qform')"><span class="sb-icon">📋</span> Quality Form</div>
+      <div class="sb-item" onclick="showAV('disputes')"><span class="sb-icon">⚡</span> Disputes <span class="sb-badge" id="audBadge">4</span></div>
+      <div class="sb-item" onclick="showAV('calibration')"><span class="sb-icon">◎</span> Calibration</div>
+      <div class="sb-user"><div class="sb-avatar" id="aAv">SK</div><div class="sb-userinfo"><div class="sb-username" id="aNm">Sara Khan</div><div class="sb-userrole">Quality Auditor</div></div></div>
+    </div>
+    <div class="main">
+      <div class="topbar"><div class="tb-title" id="aTitle">Workflow Tracker</div><div class="tb-right"><div style="padding:5px 12px;border-radius:8px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);font-size:12px;color:var(--green);">⏱ SLA: 48hr per case</div><div style="padding:5px 12px;border-radius:8px;background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);font-size:12px;color:var(--accent);" id="audSlaTimer"></div></div></div>
+      <div class="dash-content" id="aContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="overlay" id="loginOverlay">
+  <div class="modal" style="width:400px;"><div class="mglow"></div><button class="m-close" onclick="closeLogin()">✕</button>
+    <div id="stepEmail">
+      <div class="m-title">Sign In to QUALIX</div><div class="m-sub">Enter your credentials</div>
+      <div class="divrow"><div class="divline"></div><div class="divtxt">Credentials</div><div class="divline"></div></div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div><div class="field-label">Work Email</div><input class="field-input" id="emailIn" type="email" placeholder="you@company.com" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+        <div><div class="field-label">Password</div><input class="field-input" id="passIn" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+        <div class="error-msg" id="loginErr"></div>
+        <button class="btn-login" onclick="doLogin()">Sign In →</button>
+      </div>
+      <div class="m-footer">manager@qualix.io · tester@qualix.io · auditor@qualix.io<br>Password: <span style="color:var(--accent)">demo123</span><br><br><span style="color:var(--muted2)">No account? </span><span style="color:var(--accent);cursor:pointer;text-decoration:underline;" onclick="closeLogin();openSignup()">Sign up</span></div>
+    </div>
+    <div id="stepRole" style="display:none;">
+      <div class="m-title">Select Your Role</div>
+      <div class="sib" id="sibBanner"></div>
+      <div class="divrow"><div class="divline"></div><div class="divtxt">Your Access</div><div class="divline"></div></div>
+      <div id="roleCards"></div>
+      <button class="btn-back" onclick="signOut()">← Use different account</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="signupOverlay">
+  <div class="modal" style="width:400px;"><button class="m-close" onclick="closeSignup()">✕</button>
+    <div class="m-title">Create Account</div><div class="m-sub">Request access to QUALIX</div>
+    <div class="divrow"><div class="divline"></div><div class="divtxt">New Account</div><div class="divline"></div></div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div><div class="field-label">Full Name</div><input class="field-input" id="suName" placeholder="Jane Doe"/></div>
+      <div><div class="field-label">Work Email</div><input class="field-input" id="suEmail" type="email" placeholder="jane@company.com"/></div>
+      <div><div class="field-label">Password</div><input class="field-input" id="suPass" type="password" placeholder="Min 6 chars"/></div>
+      <div><div class="field-label">Role</div><select class="field-input" id="suRole" style="background:rgba(8,13,30,.9);cursor:pointer;"><option value="tester">Tester</option><option value="auditor">Quality Auditor</option><option value="manager">Manager</option></select></div>
+      <div class="error-msg" id="suErr"></div>
+      <button class="btn-login" onclick="doSignup()">Request Access →</button>
+    </div>
+    <div class="m-footer"><span style="color:var(--muted2)">Have an account? </span><span style="color:var(--accent);cursor:pointer;text-decoration:underline;" onclick="closeSignup();openLogin()">Sign in</span></div>
+  </div>
+</div>
+
+<div class="overlay" id="adminOverlay">
+  <div class="modal" style="width:680px;max-height:80vh;overflow-y:auto;"><button class="m-close" onclick="closeAdmin()">✕</button>
+    <div id="adminGate">
+      <div class="m-title">Admin Console</div><div class="m-sub">Enter admin password</div>
+      <div style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.25);border-radius:12px;padding:20px;">
+        <div class="field-label">Password</div>
+        <input class="field-input" id="adminPw" type="password" placeholder="••••••••" style="margin-bottom:12px;" onkeydown="if(event.key==='Enter')checkAdmin()"/>
+        <div class="error-msg" id="adminErr" style="margin-bottom:10px;">Incorrect password.</div>
+        <button class="btn-login" onclick="checkAdmin()">Enter Console →</button>
+        <div style="font-size:11px;color:var(--muted);margin-top:12px;text-align:center;">Demo: <span style="color:var(--violet)">admin2024</span></div>
+      </div>
+    </div>
+    <div id="adminPanel" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div><div style="font-size:18px;font-weight:800;color:#fff;">Admin Console</div><div style="font-size:12px;color:var(--muted);margin-top:2px;">Manage users & roles</div></div>
+        <div style="display:flex;gap:8px;"><div class="atab active" onclick="switchTab('users')">Users</div><div class="atab" onclick="switchTab('audit')">Audit Log</div><button onclick="document.getElementById('addUF').classList.toggle('open')" style="padding:7px 14px;border-radius:8px;background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.3);color:var(--accent);font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">+ Add User</button></div>
+      </div>
+      <div id="addUF">
+        <div class="fg">
+          <div><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;">Full Name</div><input class="fi2" id="nwName" placeholder="Jane Doe"/></div>
+          <div><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;">Email</div><input class="fi2" id="nwEmail" type="email" placeholder="jane@company.com"/></div>
+          <div><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;">Role</div><select class="fs" id="nwRole"><option value="manager">Manager</option><option value="tester" selected>Tester</option><option value="auditor">Auditor</option></select></div>
+          <div><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;">Password</div><input class="fi2" id="nwPass" type="password" placeholder="Set password"/></div>
+        </div>
+        <button onclick="createUser()" style="padding:9px 20px;border-radius:8px;background:linear-gradient(135deg,var(--violet),var(--accent));border:none;color:#fff;font-weight:700;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;">Create User</button>
+        <button onclick="document.getElementById('addUF').classList.remove('open')" style="padding:9px 16px;border-radius:8px;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:13px;cursor:pointer;margin-left:8px;font-family:'Inter',sans-serif;">Cancel</button>
+        <div class="error-msg" id="createErr" style="margin-top:8px;"></div>
+      </div>
+      <div id="tabUsers"><table class="user-table"><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead><tbody id="userTBody"></tbody></table></div>
+      <div id="tabAudit" style="display:none;"><table class="user-table"><thead><tr><th>Time</th><th>Action</th><th>User</th><th>By</th></tr></thead><tbody id="auditTBody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="uploadOverlay">
+  <div class="modal" style="width:520px;"><button class="m-close" onclick="closeUpload()">✕</button>
+    <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:4px;">Upload Case File</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">Excel · CSV · Max 50MB</div>
+    <div class="drop-zone" onclick="simUpload()" id="dropZone"><div style="font-size:32px;margin-bottom:8px;">📂</div><div style="font-weight:700;margin-bottom:4px;">Drop file here or click to browse</div><div style="font-size:11px;color:var(--muted);">.xlsx .xls .csv</div></div>
+    <div id="valResults" style="margin-top:16px;display:none;">
+      <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Validation Results</div>
+      <div class="vrow vp"><span style="color:var(--green);">✓</span> 847 rows · 43 columns mapped</div>
+      <div class="vrow vp"><span style="color:var(--green);">✓</span> Agent IDs resolved: 847/847</div>
+      <div class="vrow vw"><span style="color:var(--amber);">⚠</span> 12 rows missing Site — defaulted to "India"</div>
+      <div class="vrow vf"><span style="color:var(--red);">✗</span> 3 rows missing Interaction Date — excluded</div>
+      <div class="vrow vp"><span style="color:var(--green);">✓</span> Duplicate check passed</div>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <button onclick="confirmUpload()" style="flex:1;padding:10px;border-radius:9px;background:linear-gradient(135deg,var(--violet),var(--accent));border:none;color:#fff;font-weight:700;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;">Import 844 Valid Cases →</button>
+        <button onclick="closeUpload()" style="padding:10px 16px;border-radius:9px;background:transparent;border:1px solid var(--border2);color:var(--muted);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="scoringOverlay">
+  <div class="modal" style="width:560px;max-height:88vh;overflow-y:auto;">
+    <div class="mglow" style="background:radial-gradient(circle,rgba(16,185,129,.1),transparent 70%);"></div>
+    <button class="m-close" onclick="closeScoring()">✕</button>
+    <div id="scoringContent"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script>
+Chart.defaults.color='#FFF';Chart.defaults.borderColor='rgba(255,255,255,0.1)';Chart.defaults.font.family='Inter,sans-serif';Chart.defaults.font.size=11;
+Chart.defaults.plugins.tooltip.backgroundColor='#0f1a35';Chart.defaults.plugins.tooltip.borderColor='rgba(0,200,255,0.3)';Chart.defaults.plugins.tooltip.borderWidth=1;
+const CG={color:'rgba(255,255,255,0.08)'},CB={color:'rgba(255,255,255,0.12)'},CT={color:'#FFF'};
+const CL={color:'#FFF',boxWidth:12,padding:12,usePointStyle:true};
+const CTIP={titleColor:'#FFF',bodyColor:'#FFF',backgroundColor:'#0f1a35',borderColor:'rgba(0,200,255,0.3)',borderWidth:1};
+
+// ── API Integration Layer ──────────────────────────────────────────────────
+const API_BASE = 'http://localhost:4000/api';
+let _jwt = localStorage.getItem('qualix_token') || null;
+
+async function apiCall(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (_jwt) opts.headers['Authorization'] = 'Bearer ' + _jwt;
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const r = await fetch(API_BASE + path, opts);
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || r.statusText);
+    return data;
+  } catch (e) {
+    console.warn('API unavailable, using local state:', e.message);
+    return null;
+  }
+}
+
+function _backendRoleToFrontend(role) {
+  return role === 'Manager' ? 'manager' : role === 'Quality Auditor' ? 'auditor' : 'tester';
+}
+function _frontendRoleToBackend(role) {
+  return role === 'manager' ? 'Manager' : role === 'auditor' ? 'Quality Auditor' : 'Tester';
+}
+function _makeAvatar(name) {
+  return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+// ── End API Layer ──────────────────────────────────────────────────────────
+
+// Routing
+function goHome(){['managerPage','testerPage','auditorPage'].forEach(id=>document.getElementById(id).classList.remove('active'));document.getElementById('homePage').classList.add('active');}
+function goManager(){document.getElementById('homePage').classList.remove('active');document.getElementById('managerPage').classList.add('active');showView('overview');}
+function goTester(){document.getElementById('homePage').classList.remove('active');document.getElementById('testerPage').classList.add('active');document.getElementById('tAv').textContent=CU.avatar;document.getElementById('tNm').textContent=CU.name;showTV('mycases');}
+function goAuditor(){document.getElementById('homePage').classList.remove('active');document.getElementById('auditorPage').classList.add('active');document.getElementById('aAv').textContent=CU.avatar;document.getElementById('aNm').textContent=CU.name;showAV('workflow');}
+
+// Auth
+let USERS=[
+  {id:1,name:'Meera Iyer',email:'manager@qualix.io',password:'demo123',role:'manager',status:'active',avatar:'MI',color:'#7c3aed'},
+  {id:2,name:'Sara Khan',email:'auditor@qualix.io',password:'demo123',role:'auditor',status:'active',avatar:'SK',color:'#10b981'},
+  {id:3,name:'Arjun Patel',email:'tester@qualix.io',password:'demo123',role:'tester',status:'active',avatar:'AP',color:'#00c8ff'},
+  {id:4,name:'Rahul Mehta',email:'rahul@qualix.io',password:'demo123',role:'tester',status:'active',avatar:'RM',color:'#f59e0b'},
+  {id:5,name:'Divya Reddy',email:'divya@qualix.io',password:'demo123',role:'auditor',status:'inactive',avatar:'DR',color:'#ec4899'},
+];
+let ALOG=[{ts:'2024-01-15 09:32',action:'Role assigned: Tester',user:'Arjun Patel',by:'Admin'},{ts:'2024-01-14 14:10',action:'Access revoked',user:'Divya Reddy',by:'Admin'}];
+let nxtId=6,CU=null;
+const RCFG={manager:{label:'Manager',desc:'Upload cases · Oversee teams · View insights',icon:'🎯',cls:'mgr',ri:'ri-mgr'},tester:{label:'Tester',desc:'Run test cases · Log results · Challenge audits',icon:'🔬',cls:'tst',ri:'ri-tst'},auditor:{label:'Quality Auditor',desc:'Score cases · Resolve disputes · Calibrate',icon:'🛡️',cls:'aud',ri:'ri-aud'}};
+
+function updBtn(){
+  const b=document.getElementById('signinBtn'),i=document.getElementById('signinIcon'),l=document.getElementById('signinLabel');
+  if(CU){b.classList.add('signed-in');i.innerHTML=`<div class="signin-avatar">${CU.avatar}</div>`;l.textContent=CU.name.split(' ')[0];if(!b.querySelector('.signin-pulse')){const p=document.createElement('div');p.className='signin-pulse';b.appendChild(p);}}
+  else{b.classList.remove('signed-in');i.innerHTML='👤';l.textContent='Sign In';const p=b.querySelector('.signin-pulse');if(p)p.remove();}
+}
+function openLogin(){document.getElementById('loginOverlay').classList.add('open');if(CU){document.getElementById('stepEmail').style.display='none';showRoles(CU);}else{document.getElementById('stepEmail').style.display='';document.getElementById('stepRole').style.display='none';}}
+function closeLogin(){document.getElementById('loginOverlay').classList.remove('open');}
+async function doLogin(){
+  const email=document.getElementById('emailIn').value.trim().toLowerCase(),pass=document.getElementById('passIn').value;
+  const err=document.getElementById('loginErr');
+  // Try backend first
+  const res = await apiCall('POST','/auth/login',{email,password:pass});
+  if(res && res.token){
+    _jwt=res.token; localStorage.setItem('qualix_token',_jwt);
+    const ru=res.user;
+    const fRole=_backendRoleToFrontend(ru.role);
+    let u=USERS.find(u=>u.email===ru.email);
+    if(!u){u={id:ru.id,name:ru.name,email:ru.email,password:'',role:fRole,status:'active',avatar:_makeAvatar(ru.name),color:'#00c8ff'};USERS.push(u);}
+    err.style.display='none';CU=u;updBtn();showRoles(u);return;
+  }
+  // Fallback to local
+  const u=USERS.find(u=>u.email===email&&u.password===pass);
+  if(!u){err.textContent='Invalid email or password.';err.style.display='block';return;}
+  if(u.status==='inactive'){err.textContent='Access revoked. Contact Admin.';err.style.display='block';return;}
+  err.style.display='none';CU=u;updBtn();showRoles(u);
+}
+function showRoles(u){
+  document.getElementById('stepEmail').style.display='none';document.getElementById('stepRole').style.display='';
+  document.getElementById('sibBanner').innerHTML=`<div class="sib-av">${u.avatar}</div><div style="flex:1"><div style="font-size:14px;font-weight:700;color:#fff;">${u.name}</div><div style="font-size:11px;color:var(--muted);">${u.email}</div></div><button class="btn-signout" onclick="signOut()">Sign Out</button>`;
+  const c=document.getElementById('roleCards');c.innerHTML='';
+  ['manager','tester','auditor'].forEach(role=>{
+    const cfg=RCFG[role],ok=u.role===role,card=document.createElement('div');
+    card.className='role-card '+cfg.cls+(ok?'':' locked');
+    card.innerHTML=`<div class="ri ${cfg.ri}">${cfg.icon}</div><div class="rtw"><div class="rt-title">${cfg.label}</div><div class="rt-desc">${cfg.desc}</div></div>${ok?'<div class="r-arrow">›</div>':'<div class="lock-tag">🔒 No Access</div>'}`;
+    if(ok)card.onclick=()=>enterRole(role);
+    c.appendChild(card);
+  });
+}
+function enterRole(r){
+  closeLogin();
+  const fn={manager:()=>setTimeout(()=>{document.getElementById('sbName').textContent=CU.name;document.getElementById('sbAvatar').textContent=CU.avatar;goManager();},250),tester:()=>setTimeout(goTester,250),auditor:()=>setTimeout(goAuditor,250)};
+  if(fn[r])fn[r]();
+}
+function signOut(){CU=null;updBtn();document.getElementById('stepRole').style.display='none';document.getElementById('stepEmail').style.display='';document.getElementById('emailIn').value='';document.getElementById('passIn').value='';}
+function openSignup(){document.getElementById('signupOverlay').classList.add('open');}
+function closeSignup(){document.getElementById('signupOverlay').classList.remove('open');}
+async function doSignup(){
+  const name=document.getElementById('suName').value.trim(),email=document.getElementById('suEmail').value.trim().toLowerCase(),pass=document.getElementById('suPass').value,role=document.getElementById('suRole').value,err=document.getElementById('suErr');
+  if(!name||!email||!pass){err.textContent='Please fill in all fields.';err.style.display='block';return;}
+  if(pass.length<6){err.textContent='Password too short.';err.style.display='block';return;}
+  // Try backend first
+  const res=await apiCall('POST','/auth/signup',{name,email,password:pass,role:_frontendRoleToBackend(role)});
+  if(res&&res.token){
+    closeSignup();setTimeout(()=>alert('✅ Account created! You can now sign in.'),200);return;
+  }
+  // Fallback to local
+  if(USERS.find(u=>u.email===email)){err.textContent='Email already exists.';err.style.display='block';return;}
+  USERS.push({id:nxtId++,name,email,password:pass,role,status:'inactive',avatar:_makeAvatar(name),color:'#7c3aed'});
+  closeSignup();setTimeout(()=>alert('✅ Request submitted! Pending admin approval.'),200);
+}
+function openAdmin(){document.getElementById('adminOverlay').classList.add('open');document.getElementById('adminGate').style.display='';document.getElementById('adminPanel').style.display='none';document.getElementById('adminPw').value='';document.getElementById('adminErr').style.display='none';}
+function closeAdmin(){document.getElementById('adminOverlay').classList.remove('open');}
+function checkAdmin(){if(document.getElementById('adminPw').value!=='admin2024'){document.getElementById('adminErr').style.display='block';return;}document.getElementById('adminGate').style.display='none';document.getElementById('adminPanel').style.display='';renderUT();renderAL();}
+function switchTab(t){document.getElementById('tabUsers').style.display=t==='users'?'':'none';document.getElementById('tabAudit').style.display=t==='audit'?'':'none';document.querySelectorAll('.atab').forEach((x,i)=>x.classList.toggle('active',(i===0&&t==='users')||(i===1&&t==='audit')));}
+async function createUser(){const name=document.getElementById('nwName').value.trim(),email=document.getElementById('nwEmail').value.trim().toLowerCase(),role=document.getElementById('nwRole').value,pass=document.getElementById('nwPass').value,err=document.getElementById('createErr');if(!name||!email||!pass){err.textContent='All fields required.';err.style.display='block';return;}if(USERS.find(u=>u.email===email)){err.textContent='Email exists.';err.style.display='block';return;}err.style.display='none';const newU={id:nxtId++,name,email,password:pass,role,status:'active',avatar:_makeAvatar(name),color:'#7c3aed'};USERS.push(newU);apiCall('POST','/users',{name,email,password:pass,role:_frontendRoleToBackend(role)});document.getElementById('nwName').value='';document.getElementById('nwEmail').value='';document.getElementById('nwPass').value='';document.getElementById('addUF').classList.remove('open');renderUT();}
+async function revokeUser(id){const u=USERS.find(x=>x.id===id);if(u){u.status='inactive';renderUT();await apiCall('PATCH',`/users/${id}/revoke`);}}
+async function restoreUser(id){const u=USERS.find(x=>x.id===id);if(u){u.status='active';renderUT();await apiCall('PATCH',`/users/${id}/restore`);}}
+function changeRole(id,role){const u=USERS.find(x=>x.id===id);if(u){u.role=role;renderUT();}}
+function renderUT(){document.getElementById('userTBody').innerHTML=USERS.map(u=>`<tr><td><div style="display:flex;align-items:center;gap:10px;"><div class="ua" style="background:${u.color}20;border:1px solid ${u.color}40;color:${u.color};">${u.avatar}</div><span style="font-weight:600;">${u.name}</span></div></td><td style="color:var(--muted2);font-size:12px;">${u.email}</td><td><select onchange="changeRole(${u.id},this.value)" style="background:rgba(8,13,30,.9);border:1px solid rgba(0,200,255,.15);color:var(--text);border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;">${['manager','tester','auditor'].map(r=>`<option value="${r}"${u.role===r?' selected':''}>${RCFG[r].label}</option>`).join('')}</select></td><td><span class="sp ${u.status==='active'?'sp-act':'sp-inact'}">${u.status}</span></td><td>${u.status==='active'?`<button class="ab2 ab-rev" onclick="revokeUser(${u.id})">Revoke</button>`:`<button class="ab2 ab-rst" onclick="restoreUser(${u.id})">Restore</button>`}</td></tr>`).join('');}
+function renderAL(){document.getElementById('auditTBody').innerHTML=ALOG.map(l=>`<tr><td style="color:var(--muted2);font-size:11px;">${l.ts}</td><td>${l.action}</td><td style="font-weight:600;">${l.user}</td><td style="color:var(--violet);">${l.by}</td></tr>`).join('');}
+['loginOverlay','adminOverlay','signupOverlay','uploadOverlay','scoringOverlay'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id){if(id==='loginOverlay')closeLogin();else if(id==='adminOverlay')closeAdmin();else if(id==='signupOverlay')closeSignup();else if(id==='scoringOverlay')closeScoring();else closeUpload();}});});
+updBtn();
+
+// Data
+const AGENTS=[
+  {id:'A01',name:'Arjun Patel',sup:'Raj Kumar',site:'India',scores:[72,75,78,74,80,82,79],avg:77,errors:12,cases:28},
+  {id:'A02',name:'Priya Sharma',sup:'Raj Kumar',site:'India',scores:[88,90,87,91,89,93,92],avg:90,errors:4,cases:31},
+  {id:'A03',name:'Neha Gupta',sup:'Anita Roy',site:'India',scores:[55,58,52,60,57,61,59],avg:57,errors:22,cases:26},
+  {id:'A04',name:'Vikram Nair',sup:'Anita Roy',site:'India',scores:[83,85,84,87,86,88,90],avg:86,errors:6,cases:29},
+  {id:'A05',name:'Divya Reddy',sup:'Raj Kumar',site:'India',scores:[65,62,68,70,67,71,69],avg:67,errors:16,cases:24},
+  {id:'A06',name:'Carlos Reyes',sup:'Maria Cruz',site:'Manila',scores:[78,80,77,82,81,84,83],avg:81,errors:8,cases:30},
+  {id:'A07',name:'Ana Santos',sup:'Maria Cruz',site:'Manila',scores:[91,93,90,92,94,95,93],avg:93,errors:3,cases:33},
+  {id:'A08',name:'Jose Dela Cruz',sup:'Pedro Lim',site:'Manila',scores:[60,63,58,65,62,67,64],avg:63,errors:19,cases:25},
+  {id:'A09',name:'Maria Garcia',sup:'Pedro Lim',site:'Manila',scores:[85,87,84,88,86,89,88],avg:87,errors:5,cases:32},
+  {id:'A10',name:'Juan Reyes',sup:'Maria Cruz',site:'Manila',scores:[70,68,72,74,71,76,75],avg:72,errors:14,cases:27},
+];
+const AUDITORS=[
+  {id:'AU1',name:'Sara Khan',site:'India',assigned:25,done:22,disputes:4,agedDisputes:3},
+  {id:'AU2',name:'Rahul Mehta',site:'India',assigned:23,done:19,disputes:2,agedDisputes:1},
+  {id:'AU3',name:'Lena Torres',site:'Manila',assigned:25,done:24,disputes:1,agedDisputes:0},
+  {id:'AU4',name:'Ben Ocampo',site:'Manila',assigned:21,done:18,disputes:5,agedDisputes:4},
+];
+let DISPUTES=[
+  {id:'C-1042',agent:'Arjun Patel',auditor:'Sara Khan',hrs:38,sla:48,site:'India',reason:'Process adherence score incorrect'},
+  {id:'C-1078',agent:'Divya Reddy',auditor:'Sara Khan',hrs:51,sla:48,site:'India',reason:'Compliance breach not applicable'},
+  {id:'C-1091',agent:'Jose Dela Cruz',auditor:'Ben Ocampo',hrs:26,sla:48,site:'Manila',reason:'Customer satisfaction rating disputed'},
+  {id:'C-1103',agent:'Juan Reyes',auditor:'Ben Ocampo',hrs:44,sla:48,site:'Manila',reason:'Opening greeting flagged incorrectly'},
+  {id:'C-1115',agent:'Neha Gupta',auditor:'Sara Khan',hrs:19,sla:24,site:'India',reason:'Empathy score below standard'},
+  {id:'C-1120',agent:'Carlos Reyes',auditor:'Ben Ocampo',hrs:52,sla:48,site:'Manila',reason:'CRM update disputed'},
+];
+let CASES=[
+  {id:'C-1200',agent:'Priya Sharma',auditor:'Rahul Mehta',site:'India',type:'Inbound',status:'New',date:'2024-01-15',score:null},
+  {id:'C-1201',agent:'Ana Santos',auditor:'Lena Torres',site:'Manila',type:'Chat',status:'New',date:'2024-01-15',score:null},
+  {id:'C-1202',agent:'Vikram Nair',auditor:'Sara Khan',site:'India',type:'Outbound',status:'Pending Audit',date:'2024-01-14',score:null},
+  {id:'C-1203',agent:'Maria Garcia',auditor:'Ben Ocampo',site:'Manila',type:'Email',status:'Audited',date:'2024-01-14',score:88},
+  {id:'C-1204',agent:'Arjun Patel',auditor:'Sara Khan',site:'India',type:'Inbound',status:'Disputed',date:'2024-01-13',score:62},
+  {id:'C-1205',agent:'Carlos Reyes',auditor:'Lena Torres',site:'Manila',type:'Chat',status:'Closed',date:'2024-01-12',score:91},
+  {id:'C-1206',agent:'Arjun Patel',auditor:'Sara Khan',site:'India',type:'Outbound',status:'Pending Audit',date:'2024-01-15',score:null},
+  {id:'C-1207',agent:'Arjun Patel',auditor:'Rahul Mehta',site:'India',type:'Chat',status:'Pending Audit',date:'2024-01-14',score:null},
+  {id:'C-1208',agent:'Arjun Patel',auditor:'Sara Khan',site:'India',type:'Email',status:'Audited',date:'2024-01-13',score:79},
+];
+const ERRORS=[
+  {cat:'Process',name:'Missing verification step',pct:68,pts:8,count:182},
+  {cat:'Process',name:'CRM not updated correctly',pct:54,pts:6,count:145},
+  {cat:'Product',name:'Wrong policy cited',pct:47,pts:7,count:126},
+  {cat:'Process',name:'No proper closing/next steps',pct:41,pts:5,count:110},
+  {cat:'Product',name:'Incorrect product info given',pct:35,pts:9,count:94},
+  {cat:'Soft Skill',name:'Empathy not demonstrated',pct:28,pts:5,count:75},
+  {cat:'Compliance',name:'Mandatory disclosure missed',pct:21,pts:10,count:57},
+];
+const RUBRIC=[
+  {name:'Opening & Greeting',weight:10},{name:'Needs Identification',weight:15},
+  {name:'Product Knowledge',weight:20},{name:'Process Adherence',weight:20},
+  {name:'Empathy & Tone',weight:15},{name:'Closing & Next Steps',weight:10},{name:'Compliance',weight:10},
+];
+const WKS=['W1','W2','W3','W4','W5','W6','W7'];
+const TW=400,AW=312;
+let SITE='ALL',CHARTS={},VIEW='overview';
+let DFR=new Date('2024-01-01'),DTO=new Date('2024-01-31');
+
+// Helpers
+const filt=arr=>SITE==='ALL'?arr:arr.filter(x=>x.site===SITE);
+const sCol=s=>s>=85?'#10b981':s>=70?'#00c8ff':s>=60?'#f59e0b':'#ef4444';
+const sTg=s=>`<span class="tag" style="background:${s==='India'?'rgba(124,58,237,.15)':'rgba(0,200,255,.1)'};color:${s==='India'?'rgba(167,139,250,.9)':'#00c8ff'}">${s}</span>`;
+const pill=s=>{const m={'New':'p-new','Pending Audit':'p-pending','Audited':'p-audited','Disputed':'p-disputed','Closed':'p-closed'};return`<span class="pill ${m[s]||'p-closed'}">${s}</span>`;};
+const cSty=c=>{const m={Process:'background:rgba(0,200,255,.12);border:1px solid rgba(0,200,255,.3);color:var(--accent)',Product:'background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);color:rgba(167,139,250,.9)','Soft Skill':'background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--amber)',Compliance:'background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red)'};return m[c]||'';};
+function setSite(s,btn){SITE=s;document.querySelectorAll('.site-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');showView(VIEW);}
+function dCharts(){Object.values(CHARTS).forEach(c=>{try{c.destroy();}catch(e){}});CHARTS={};}
+function dLbl(){return`${DFR.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})} – ${DTO.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`;}
+function setQR(r,btn){const now=new Date('2024-01-31');document.querySelectorAll('.qr-btn').forEach(b=>b.classList.remove('qr-active'));btn.classList.add('qr-active');if(r==='7d'){DFR=new Date(now-7*864e5);DTO=new Date(now);}else if(r==='30d'){DFR=new Date(now-30*864e5);DTO=new Date(now);}else if(r==='90d'){DFR=new Date(now-90*864e5);DTO=new Date(now);}else{DFR=new Date('2024-01-01');DTO=new Date(now);}document.getElementById('dateFrom').value=DFR.toISOString().slice(0,10);document.getElementById('dateTo').value=DTO.toISOString().slice(0,10);if(VIEW==='overview')renderOV();}
+function applyDR(){DFR=new Date(document.getElementById('dateFrom').value);DTO=new Date(document.getElementById('dateTo').value);if(VIEW==='overview')renderOV();}
+function dfAgents(){const days=Math.max(1,Math.round((DTO-DFR)/864e5));const f=Math.min(1,days/30);return filt(AGENTS).map(a=>({...a,cases:Math.max(1,Math.round(a.cases*f))}));}
+
+function showView(v){
+  VIEW=v;dCharts();
+  document.querySelectorAll('#managerPage .sb-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('#managerPage .sb-item').forEach(i=>{if(i.getAttribute('onclick')&&i.getAttribute('onclick').includes(`'${v}'`))i.classList.add('active');});
+  const T={overview:'Program Overview',ingest:'Data Ingest',assign:'Case Assignment',disputes:'Dispute Management',agents:'Agent Scores',errors:'Error Taxonomy',velocity:'Weekly Velocity',bottleneck:'Bottleneck Report'};
+  document.getElementById('viewTitle').textContent=T[v]||v;
+  document.getElementById('drw').style.display=v==='overview'?'flex':'none';
+  const fn={overview:renderOV,ingest:renderIngest,assign:renderAssign,disputes:renderDisputes,agents:renderAgents,errors:renderErrors,velocity:renderVel,bottleneck:renderBN};
+  if(fn[v])fn[v]();
+}
+
+// ── OVERVIEW ──────────────────────────────────────────────────────────────────
+function renderOV(){
+  const ag=dfAgents(),dp=filt(DISPUTES);
+  const avg=Math.round(ag.reduce((a,x)=>a+x.avg,0)/ag.length),atR=dp.filter(d=>d.hrs>24).length;
+  document.getElementById('dashContent').innerHTML=`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><div style="font-size:11px;color:#64748b;background:rgba(0,200,255,.07);border:1px solid rgba(0,200,255,.15);border-radius:6px;padding:4px 12px;">📅 <span style="color:#00c8ff;font-weight:700;">${dLbl()}</span></div></div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-label">Avg Quality Score</div><div class="kpi-val" style="color:${sCol(avg)}">${avg}%</div><div class="kpi-trend t-up">↑ 3.2 WoW</div></div>
+    <div class="kpi"><div class="kpi-label">Total Cases</div><div class="kpi-val" style="color:var(--accent)">${ag.reduce((a,x)=>a+x.cases,0)}</div><div class="kpi-sub">This cycle</div></div>
+    <div class="kpi"><div class="kpi-label">At-Risk Disputes</div><div class="kpi-val" style="color:var(--red)">${atR}</div><div class="kpi-trend t-warn">⚠ >24hr SLA</div></div>
+    <div class="kpi"><div class="kpi-label">Weekly Velocity</div><div class="kpi-val" style="color:var(--amber)">${AW}</div><div class="kpi-sub">Target: ${TW}</div></div>
+    <div class="kpi"><div class="kpi-label">Audit Coverage</div><div class="kpi-val" style="color:var(--green)">97%</div><div class="kpi-trend t-up">↑ 1.1 WoW</div></div>
+  </div>
+  <div class="grid-65">
+    <div class="panel"><div class="section-hd"><div class="section-title">WoW Score Trend</div></div><canvas id="wowC" height="150"></canvas></div>
+    <div class="panel"><div class="section-hd"><div class="section-title">Status Mix</div></div><canvas id="statC" height="150"></canvas></div>
+  </div>
+  <div class="grid-2">
+    <div class="panel"><div class="at-risk-hd"><div class="section-title">At-Risk Disputes</div><div class="at-risk-alert">🔴 ${atR} BREACHED</div></div>
+      ${dp.filter(d=>d.hrs>24).map(d=>`<div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:10px;padding:12px;margin-bottom:8px;"><div class="fl" style="justify-content:space-between;margin-bottom:6px;"><span style="font-weight:700;color:var(--accent);font-size:12px;">${d.id}</span><span class="clock-badge cc">⏱ ${d.hrs}h</span></div><div style="font-size:11px;color:var(--muted2);margin-bottom:4px;">${d.agent} → ${d.auditor}</div><div class="sla-bar"><div class="sla-fill" style="width:${Math.min(100,Math.round(d.hrs/d.sla*100))}%;background:${d.hrs>d.sla?'var(--red)':'var(--amber)'}"></div></div></div>`).join('')}
+    </div>
+    <div class="panel"><div class="section-hd"><div class="section-title">Supervisor Roll-up</div></div>
+      ${['Raj Kumar','Anita Roy','Maria Cruz','Pedro Lim'].map(sup=>{const sa=ag.filter(a=>a.sup===sup);if(!sa.length)return'';const av=Math.round(sa.reduce((a,x)=>a+x.avg,0)/sa.length);return`<div style="margin-bottom:14px;"><div class="fl" style="justify-content:space-between;margin-bottom:6px;"><span style="font-size:12px;font-weight:700;">${sup}</span><span style="font-weight:800;color:${sCol(av)}">${av}%</span></div><div class="sbar-bg"><div class="sbar-fill" style="width:${av}%;background:${sCol(av)}"></div></div><div style="font-size:10px;color:var(--muted);margin-top:3px;">${sa.length} agents · ${sa.reduce((a,x)=>a+x.cases,0)} cases</div></div>`;}).join('')}
+    </div>
+  </div>`;
+  requestAnimationFrame(()=>{
+    const e1=document.getElementById('wowC'),e2=document.getElementById('statC');if(!e1||!e2)return;
+    CHARTS.wow=new Chart(e1,{type:'line',data:{labels:WKS,datasets:[{label:'Score',data:[74,76,75,78,80,81,avg],borderColor:'#00c8ff',backgroundColor:'rgba(0,200,255,0.1)',fill:true,tension:.4,pointRadius:4,pointBackgroundColor:'#00c8ff'},{label:'Target',data:[80,80,80,80,80,80,80],borderColor:'#7c3aed',borderDash:[6,4],fill:false,pointRadius:0,borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:CL},tooltip:CTIP},scales:{x:{grid:CG,border:CB,ticks:CT},y:{grid:CG,border:CB,ticks:{...CT,callback:v=>v+'%'},min:60,max:100}}}});
+    CHARTS.stat=new Chart(e2,{type:'doughnut',data:{labels:['New','Pending','Audited','Disputed','Closed'],datasets:[{data:[18,32,41,6,3],backgroundColor:['#00c8ff','#f59e0b','#10b981','#ef4444','#64748b'],borderColor:'#0c1429',borderWidth:3,hoverOffset:8}]},options:{responsive:true,plugins:{legend:{position:'right',labels:CL},tooltip:CTIP}}});
+  });
+}
+
+// ── INGEST ────────────────────────────────────────────────────────────────────
+function renderIngest(){
+  document.getElementById('dashContent').innerHTML=`
+  <div class="panel" style="margin-bottom:16px;"><div class="section-hd"><div class="section-title">Data Ingest Pipeline</div></div><div style="display:flex;align-items:center;margin:16px 0;">${['📂 Upload Excel','🔍 Validation','🧹 Dedup & Clean','📋 Staging','✅ Assign'].map((s,i,a)=>`<div style="flex:1;text-align:center;"><div style="background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);border-radius:10px;padding:12px 6px;font-size:11px;font-weight:700;">${s}</div></div>${i<a.length-1?'<div style="color:var(--accent);font-size:16px;padding:0 4px;">→</div>':''}`).join('')}</div></div>
+  <div class="grid-2">
+    <div class="panel"><div class="section-hd"><div class="section-title">Required Columns</div></div><table class="tbl"><thead><tr><th>Column</th><th>Type</th><th>Required</th><th>Validation</th></tr></thead><tbody>${[['Case ID','String','Yes','Unique, non-null'],['Agent ID','String','Yes','Must match roster'],['Site','Enum','Yes','Manila / India'],['Interaction Date','Date','Yes','ISO 8601'],['Interaction Type','Enum','Yes','Inbound/Chat/Email'],['CSAT Score','Float','No','0.0 – 5.0']].map(([c,t,r,v])=>`<tr><td style="font-weight:600;color:var(--accent)">${c}</td><td><span class="tag" style="background:rgba(124,58,237,.15);color:rgba(167,139,250,.9);">${t}</span></td><td>${r==='Yes'?'<span style="color:var(--green)">✓</span>':'—'}</td><td style="color:var(--muted);font-size:11px;">${v}</td></tr>`).join('')}</tbody></table></div>
+    <div class="panel"><div class="section-hd"><div class="section-title">Recent Uploads</div></div>${[['batch_jan15.xlsx','844 cases','3 errors','India','2024-01-15'],['batch_jan08.xlsx','912 cases','0 errors','Manila','2024-01-08'],['batch_jan01.xlsx','788 cases','7 errors','India','2024-01-01']].map(([f,c,e,s,d])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;"><div><div style="font-weight:700;font-size:12px;">📄 ${f}</div><div style="font-size:10px;color:var(--muted);margin-top:2px;">${c} · ${d}</div></div><div style="text-align:right">${sTg(s)}<div style="font-size:10px;margin-top:4px;color:${e==='0 errors'?'var(--green)':'var(--amber)'};">${e}</div></div></div>`).join('')}<button onclick="openUpload()" style="width:100%;padding:10px;border-radius:9px;background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);color:var(--accent);font-weight:700;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:4px;">+ Upload New File</button></div>
+  </div>`;
+}
+
+// ── ASSIGN ────────────────────────────────────────────────────────────────────
+function renderAssign(){
+  const cases=filt(CASES);
+  document.getElementById('dashContent').innerHTML=`
+  <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi"><div class="kpi-label">New</div><div class="kpi-val" style="color:var(--accent)">${cases.filter(c=>c.status==='New').length}</div></div>
+    <div class="kpi"><div class="kpi-label">Pending Audit</div><div class="kpi-val" style="color:var(--amber)">${cases.filter(c=>c.status==='Pending Audit').length}</div></div>
+    <div class="kpi"><div class="kpi-label">Audited</div><div class="kpi-val" style="color:var(--green)">${cases.filter(c=>c.status==='Audited').length}</div></div>
+    <div class="kpi"><div class="kpi-label">Disputed / Closed</div><div class="kpi-val" style="color:var(--red)">${cases.filter(c=>['Disputed','Closed'].includes(c.status)).length}</div></div>
+  </div>
+  <div class="grid-65">
+    <div class="panel"><div class="section-hd"><div class="section-title">Case Queue</div><button onclick="alert('Auto-assigned!')" style="padding:6px 14px;border-radius:7px;background:rgba(0,200,255,.12);border:1px solid rgba(0,200,255,.3);color:var(--accent);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Auto-Assign All →</button></div>
+    <table class="tbl"><thead><tr><th>Case ID</th><th>Agent</th><th>Auditor</th><th>Site</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>${cases.map(c=>`<tr><td style="font-weight:700;color:var(--accent)">${c.id}</td><td>${c.agent}</td><td style="color:var(--muted2)">${c.auditor}</td><td>${sTg(c.site)}</td><td>${pill(c.status)}</td><td>${c.status==='New'?`<button onclick="asgn('${c.id}')" style="padding:3px 10px;border-radius:5px;background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.25);color:var(--accent);font-size:10px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Assign →</button>`:'—'}</td></tr>`).join('')}</tbody></table></div>
+    <div class="panel"><div class="section-hd"><div class="section-title">Auditor Workload</div></div>${AUDITORS.map(a=>{const p=Math.round(a.done/a.assigned*100);return`<div style="margin-bottom:12px;padding:10px;background:var(--card2);border:1px solid var(--border);border-radius:10px;"><div class="fl" style="justify-content:space-between;margin-bottom:6px;"><div class="fl"><div class="av-sm" style="background:linear-gradient(135deg,var(--violet),var(--accent));color:#fff;">${a.name.split(' ').map(x=>x[0]).join('')}</div><div><div style="font-size:12px;font-weight:700">${a.name}</div><div style="font-size:9px;color:var(--muted)">${a.site}</div></div></div><span style="font-size:11px;font-weight:700;color:var(--accent)">${a.done}/${a.assigned}</span></div><div class="sbar-bg"><div class="sbar-fill" style="width:${p}%;background:${p>90?'var(--amber)':'var(--green)'}"></div></div></div>`;}).join('')}</div>
+  </div>`;
+}
+function asgn(id){const c=CASES.find(x=>x.id===id);if(c){c.status='Pending Audit';renderAssign();}}
+
+// ── DISPUTES ──────────────────────────────────────────────────────────────────
+function renderDisputes(){
+  const dp=filt(DISPUTES);
+  document.getElementById('dashContent').innerHTML=`
+  <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi"><div class="kpi-label">Total</div><div class="kpi-val" style="color:var(--amber)">${dp.length}</div></div>
+    <div class="kpi"><div class="kpi-label">At-Risk >24hr</div><div class="kpi-val" style="color:var(--red)">${dp.filter(d=>d.hrs>24).length}</div></div>
+    <div class="kpi"><div class="kpi-label">Avg Age</div><div class="kpi-val" style="color:var(--amber)">${Math.round(dp.reduce((a,d)=>a+d.hrs,0)/dp.length)}h</div></div>
+    <div class="kpi"><div class="kpi-label">48hr Breached</div><div class="kpi-val" style="color:var(--red)">${dp.filter(d=>d.hrs>48).length}</div></div>
+  </div>
+  <div class="panel"><div class="at-risk-hd"><div class="section-title">Dispute Ageing Clock</div><div class="at-risk-alert">SLA: 24hr / 48hr</div></div>
+  <table class="tbl"><thead><tr><th>Case</th><th>Agent</th><th>Auditor</th><th>Site</th><th>Elapsed</th><th>SLA</th><th>Reason</th><th>Status</th></tr></thead>
+  <tbody>${dp.map(d=>{const p=Math.min(100,Math.round(d.hrs/d.sla*100));return`<tr><td style="font-weight:700;color:var(--accent)">${d.id}</td><td style="font-size:11px">${d.agent}</td><td style="font-size:11px;color:var(--muted2)">${d.auditor}</td><td>${sTg(d.site)}</td><td><span class="clock-badge ${d.hrs>d.sla?'cc':'cw'}">⏱ ${d.hrs}h</span></td><td style="min-width:90px"><div class="sla-bar" style="height:6px"><div class="sla-fill" style="width:${p}%;background:${p>=100?'var(--red)':p>=75?'var(--amber)':'var(--green)'}"></div></div></td><td style="font-size:10px;color:var(--muted2);max-width:130px">${d.reason}</td><td><span class="pill ${d.hrs>d.sla?'p-atrisk':d.hrs>d.sla*.75?'p-pending':'p-disputed'}">${d.hrs>d.sla?'At Risk':d.hrs>d.sla*.75?'Warning':'Active'}</span></td></tr>`;}).join('')}</tbody></table></div>`;
+}
+
+// ── AGENTS ────────────────────────────────────────────────────────────────────
+function renderAgents(){
+  const ag=filt(AGENTS);
+  document.getElementById('dashContent').innerHTML=`
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="panel"><div class="section-hd"><div class="section-title">Score Heatmap</div><div style="font-size:11px;color:var(--muted)">🟢≥85 🔵≥70 🟡≥60 🔴&lt;60</div></div><div class="hm-grid" id="hmGrid"></div></div>
+    <div class="panel"><div class="section-hd"><div class="section-title">WoW Trendlines</div></div><canvas id="agC" height="180"></canvas></div>
+  </div>
+  <div class="panel"><div class="section-hd"><div class="section-title">Agent Leaderboard</div></div>
+  <table class="tbl"><thead><tr><th>#</th><th>Agent</th><th>Site</th><th>Supervisor</th><th>Avg Score</th><th>Cases</th><th>Errors</th><th>Trend</th></tr></thead>
+  <tbody>${[...ag].sort((a,b)=>b.avg-a.avg).map((a,i)=>`<tr><td style="font-weight:800;color:${i===0?'var(--amber)':i===1?'var(--muted2)':'var(--muted)'}">#${i+1}</td><td><div class="fl"><div class="av-sm" style="background:${sCol(a.avg)}30;border:1px solid ${sCol(a.avg)}50;color:${sCol(a.avg)}">${a.name.split(' ').map(x=>x[0]).join('')}</div>${a.name}</div></td><td>${sTg(a.site)}</td><td style="color:var(--muted2);font-size:11px">${a.sup}</td><td><div style="display:flex;align-items:center;gap:8px;"><div class="sbar-bg"><div class="sbar-fill" style="width:${a.avg}%;background:${sCol(a.avg)}"></div></div><span style="font-weight:700;color:${sCol(a.avg)}">${a.avg}%</span></div></td><td style="color:var(--muted2)">${a.cases}</td><td style="color:${a.errors>15?'var(--red)':a.errors>8?'var(--amber)':'var(--green)'};font-weight:700">${a.errors}</td><td style="color:${a.scores[6]>a.scores[0]?'var(--green)':'var(--red)'}">${a.scores[6]>a.scores[0]?'↑ +'+(a.scores[6]-a.scores[0]):'↓ '+(a.scores[6]-a.scores[0])}</td></tr>`).join('')}</tbody></table></div>`;
+  const grid=document.getElementById('hmGrid');
+  ag.forEach(a=>a.scores.forEach((s,wi)=>{const cell=document.createElement('div');cell.className='hm-cell';cell.title=`${a.name} W${wi+1}: ${s}%`;cell.style.background=s>=85?'rgba(16,185,129,.7)':s>=70?'rgba(0,200,255,.5)':s>=60?'rgba(245,158,11,.6)':'rgba(239,68,68,.6)';cell.textContent=s;grid.appendChild(cell);}));
+  requestAnimationFrame(()=>{const el=document.getElementById('agC');if(!el)return;const top=[...ag].sort((a,b)=>b.avg-a.avg).slice(0,4);CHARTS.ag=new Chart(el,{type:'line',data:{labels:WKS,datasets:top.map((a,i)=>({label:a.name.split(' ')[0],data:a.scores,borderColor:['#00c8ff','#10b981','#f59e0b','#ec4899'][i],backgroundColor:'transparent',tension:.4,pointRadius:3,borderWidth:2}))},options:{responsive:true,plugins:{legend:{labels:CL},tooltip:CTIP},scales:{x:{grid:CG,ticks:CT,border:CB},y:{grid:CG,ticks:{...CT,callback:v=>v+'%'},border:CB,min:50,max:100}}}});});
+}
+
+// ── ERRORS ────────────────────────────────────────────────────────────────────
+function renderErrors(){
+  const errs=SITE==='ALL'?ERRORS:ERRORS.map(e=>({...e,count:Math.round(e.count*(SITE==='Manila'?.48:.52))}));
+  document.getElementById('dashContent').innerHTML=`
+  <div class="grid-2">
+    <div class="panel"><div class="section-hd"><div class="section-title">Top 5 Pareto</div></div>${errs.slice(0,5).map((e,i)=>{const cols=['var(--red)','rgba(239,68,68,.7)','var(--amber)','rgba(245,158,11,.6)','rgba(245,158,11,.4)'];return`<div class="pareto-row"><div class="pareto-lbl"><span style="color:${cols[i]};font-weight:800">#${i+1}</span> ${e.name}</div><div class="pareto-bg"><div class="pareto-fill" style="width:${e.pct}%;background:${cols[i]};color:#fff">${e.pct}%</div></div><span style="font-size:10px;font-weight:700;color:${cols[i]}">${e.count}</span></div>`;}).join('')}</div>
+    <div class="panel"><div class="section-hd"><div class="section-title">By Category</div></div><canvas id="errC" height="200"></canvas></div>
+  </div>
+  <div class="panel"><div class="section-hd"><div class="section-title">Full Taxonomy</div></div><table class="tbl"><thead><tr><th>Error</th><th>Category</th><th>Occurrences</th><th>Pts Lost</th><th>Impact</th></tr></thead><tbody>${errs.map(e=>`<tr><td style="font-weight:600">${e.name}</td><td><span class="pill" style="${cSty(e.cat)}">${e.cat}</span></td><td><div style="display:flex;align-items:center;gap:8px;"><div class="sbar-bg"><div class="sbar-fill" style="width:${e.pct}%;background:var(--red)"></div></div><span style="color:var(--muted2);font-size:11px">${e.count}</span></div></td><td style="color:var(--amber);font-weight:700">${e.pts}</td><td style="color:var(--red);font-weight:700">${e.pct}%</td></tr>`).join('')}</tbody></table></div>`;
+  requestAnimationFrame(()=>{const el=document.getElementById('errC');if(!el)return;const cats={};errs.forEach(e=>{cats[e.cat]=(cats[e.cat]||0)+e.count;});CHARTS.err=new Chart(el,{type:'bar',data:{labels:Object.keys(cats),datasets:[{data:Object.values(cats),backgroundColor:['#00c8ff','#7c3aed','#f59e0b','#ef4444'],borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:CTIP},scales:{x:{grid:CG,ticks:CT,border:CB},y:{grid:CG,ticks:CT,border:CB}}}});});
+}
+
+// ── VELOCITY ──────────────────────────────────────────────────────────────────
+function renderVel(){
+  const sf=SITE==='Manila'?.42:SITE==='India'?.58:1;
+  const ac=Math.round(AW*sf),tg=Math.round(TW*sf),pc=Math.round(ac/tg*100);
+  document.getElementById('dashContent').innerHTML=`
+  <div class="grid-3">
+    <div class="panel"><div class="section-hd"><div class="section-title">Weekly Gauge</div></div><div class="gauge-wrap"><canvas id="gauC" width="200" height="120"></canvas><div style="text-align:center;margin-top:8px"><div style="font-size:28px;font-weight:900;color:var(--amber)">${ac}</div><div style="font-size:11px;color:var(--muted)">of ${tg} · ${pc}%</div></div></div></div>
+    <div class="panel" style="grid-column:span 2"><div class="section-hd"><div class="section-title">Daily Velocity</div></div><canvas id="velC" height="160"></canvas></div>
+  </div>
+  <div class="grid-2">
+    <div class="panel"><div class="section-hd"><div class="section-title">Site Breakdown</div></div>${[['India',Math.round(182*sf),Math.round(200*sf),'var(--violet)'],['Manila',Math.round(130*sf),Math.round(200*sf),'var(--accent)']].map(([s,a,t,c])=>`<div style="margin-bottom:16px"><div class="fl" style="justify-content:space-between;margin-bottom:6px"><span style="font-weight:700">${s}</span><span style="color:${c};font-weight:800">${a} / ${t}</span></div><div class="sbar-bg" style="height:8px"><div class="sbar-fill" style="width:${Math.round(a/t*100)}%;background:${c}"></div></div></div>`).join('')}</div>
+    <div class="panel"><div class="section-hd"><div class="section-title">WoW Trend</div></div><canvas id="vwC" height="150"></canvas></div>
+  </div>`;
+  requestAnimationFrame(()=>{
+    const g=document.getElementById('gauC'),v=document.getElementById('velC'),w=document.getElementById('vwC');if(!g||!v||!w)return;
+    CHARTS.gau=new Chart(g,{type:'doughnut',data:{labels:['Done','Remaining'],datasets:[{data:[ac,Math.max(0,tg-ac)],backgroundColor:['#f59e0b','rgba(255,255,255,0.05)'],borderColor:['#f59e0b','transparent'],borderWidth:[2,0],circumference:180,rotation:270}]},options:{plugins:{legend:{display:false},tooltip:CTIP},cutout:'72%'}});
+    CHARTS.vel=new Chart(v,{type:'bar',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat'],datasets:[{label:'Actual',data:[58,72,63,55,64,0].map(x=>Math.round(x*sf)),backgroundColor:'rgba(0,200,255,0.6)',borderRadius:6},{label:'Target',data:[66,66,66,66,66,66].map(x=>Math.round(x*sf)),type:'line',borderColor:'#f59e0b',borderDash:[6,3],fill:false,pointRadius:0,borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:CL},tooltip:CTIP},scales:{x:{grid:CG,ticks:CT,border:CB},y:{grid:CG,ticks:CT,border:CB}}}});
+    CHARTS.vw=new Chart(w,{type:'line',data:{labels:WKS,datasets:[{label:'Actual',data:[310,355,388,330,402,370,ac].map(x=>Math.round(x*sf)),borderColor:'#00c8ff',fill:true,backgroundColor:'rgba(0,200,255,0.07)',tension:.4,pointRadius:3},{label:'Target',data:[400,400,400,400,400,400,400].map(x=>Math.round(x*sf)),borderColor:'#f59e0b',borderDash:[6,3],fill:false,pointRadius:0,borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:CL},tooltip:CTIP},scales:{x:{grid:CG,ticks:CT,border:CB},y:{grid:CG,ticks:CT,border:CB,min:0}}}});
+  });
+}
+
+// ── BOTTLENECK ────────────────────────────────────────────────────────────────
+function renderBN(){
+  const auds=SITE==='ALL'?AUDITORS:AUDITORS.filter(a=>a.site===SITE);
+  document.getElementById('dashContent').innerHTML=`
+  <div class="panel" style="margin-bottom:16px"><div class="at-risk-hd"><div class="section-title">Auditor Dispute Load</div><div class="at-risk-alert">Rebalance Recommended</div></div>
+  <table class="tbl"><thead><tr><th>Auditor</th><th>Site</th><th>Assigned</th><th>Done</th><th>Disputes</th><th>Aged >24hr</th><th>Action</th></tr></thead>
+  <tbody>${[...auds].sort((a,b)=>b.agedDisputes-a.agedDisputes).map(a=>`<tr><td><div class="fl"><div class="av-sm" style="background:linear-gradient(135deg,var(--violet),var(--accent));color:#fff;">${a.name.split(' ').map(x=>x[0]).join('')}</div>${a.name}</div></td><td>${sTg(a.site)}</td><td>${a.assigned}</td><td>${a.done}</td><td style="color:${a.disputes>3?'var(--red)':'var(--amber)'};font-weight:700">${a.disputes}</td><td>${a.agedDisputes>0?`<span class="clock-badge cc">⚠ ${a.agedDisputes}</span>`:'<span style="color:var(--green)">✓ 0</span>'}</td><td>${a.agedDisputes>=3?`<button onclick="alert('Rebalancing...')" style="padding:4px 10px;border-radius:6px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red);font-size:10px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Rebalance</button>`:'<span style="color:var(--muted);font-size:10px">OK</span>'}</td></tr>`).join('')}</tbody></table></div>
+  <div class="grid-2">
+    <div class="panel"><div class="section-hd"><div class="section-title">Dispute Distribution</div></div><canvas id="bnC" height="180"></canvas></div>
+    <div class="panel"><div class="section-hd"><div class="section-title">Recommendations</div></div>${[['Ben Ocampo','4 aged — redistribute 2 to Lena Torres','var(--red)','High'],['Sara Khan','3 aged — flag for supervisor review','var(--amber)','Medium'],['Rahul Mehta','1 aged — monitor','var(--green)','Low'],['Lena Torres','0 aged — available for rebalancing','var(--accent)','Clear']].filter(([n])=>auds.find(a=>a.name===n)||SITE==='ALL').map(([n,r,c,p])=>`<div style="display:flex;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px"><div style="width:3px;border-radius:2px;background:${c};flex-shrink:0"></div><div><div style="font-size:12px;font-weight:700;margin-bottom:2px">${n} <span style="font-size:9px;padding:1px 6px;border-radius:4px;background:${c}20;color:${c}">${p}</span></div><div style="font-size:11px;color:var(--muted)">${r}</div></div></div>`).join('')}</div>
+  </div>`;
+  requestAnimationFrame(()=>{const el=document.getElementById('bnC');if(!el)return;CHARTS.bn=new Chart(el,{type:'bar',data:{labels:auds.map(a=>a.name.split(' ')[0]),datasets:[{label:'Total',data:auds.map(a=>a.disputes),backgroundColor:'rgba(245,158,11,0.6)',borderRadius:4},{label:'Aged >24hr',data:auds.map(a=>a.agedDisputes),backgroundColor:'rgba(239,68,68,0.75)',borderRadius:4}]},options:{responsive:true,plugins:{legend:{labels:CL},tooltip:CTIP},scales:{x:{grid:CG,ticks:CT,border:CB},y:{grid:CG,ticks:CT,border:CB}}}});});
+}
+
+// ── TESTER ────────────────────────────────────────────────────────────────────
+function showTV(v){
+  document.querySelectorAll('#testerPage .sb-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('#testerPage .sb-item').forEach(i=>{if(i.getAttribute('onclick')&&i.getAttribute('onclick').includes(`'${v}'`))i.classList.add('active');});
+  document.getElementById('tTitle').textContent={mycases:'My Cases',completed:'Completed',disputes:'My Disputes'}[v];
+  if(v==='mycases')renderTMC();else if(v==='completed')renderTComp();else renderTDisp();
+}
+function renderTMC(){
+  const nm=CU?CU.name:'Arjun Patel';
+  const pend=CASES.filter(c=>c.agent===nm&&['New','Pending Audit'].includes(c.status));
+  const done=CASES.filter(c=>c.agent===nm&&c.score!==null);
+  const avg=done.length?Math.round(done.reduce((a,x)=>a+x.score,0)/done.length):0;
+  document.getElementById('tContent').innerHTML=`
+  <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi"><div class="kpi-label">Pending</div><div class="kpi-val" style="color:var(--amber)">${pend.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Completed</div><div class="kpi-val" style="color:var(--green)">${done.length}</div></div>
+    <div class="kpi"><div class="kpi-label">My Avg Score</div><div class="kpi-val" style="color:${sCol(avg)}">${avg}%</div></div>
+    <div class="kpi"><div class="kpi-label">Disputes Filed</div><div class="kpi-val" style="color:var(--red)">${DISPUTES.filter(d=>d.agent===nm).length}</div></div>
+  </div>
+  <div class="panel"><div class="section-hd"><div class="section-title">Cases Awaiting Me</div></div>
+    ${pend.length===0?'<div style="text-align:center;padding:32px;color:var(--muted);">All caught up ✓</div>':''}
+    ${pend.map(c=>`<div style="background:var(--card2);border:1px solid rgba(0,200,255,.12);border-radius:12px;padding:14px;margin-bottom:10px;">
+      <div class="fl" style="justify-content:space-between;margin-bottom:10px;"><div class="fl"><span style="font-weight:800;color:var(--accent);font-size:14px;">${c.id}</span>${sTg(c.site)}</div><div class="fl">${pill(c.status)}<span style="font-size:10px;color:var(--muted);">${c.date}</span></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div style="font-size:11px;"><span style="color:var(--muted);">Auditor</span><br><b>${c.auditor}</b></div>
+        <div style="font-size:11px;"><span style="color:var(--muted);">Type</span><br><b>${c.type}</b></div>
+        <div style="font-size:11px;"><span style="color:var(--muted);">Score</span><br><span style="color:var(--muted);">Pending</span></div>
+      </div>
+      <button onclick="openScoring('${c.id}','tester')" style="width:100%;padding:8px;border-radius:8px;background:linear-gradient(135deg,rgba(0,200,255,.15),rgba(124,58,237,.1));border:1px solid rgba(0,200,255,.3);color:var(--accent);font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">🔬 Review Case</button>
+    </div>`).join('')}
+  </div>`;
+}
+function renderTComp(){
+  const nm=CU?CU.name:'Arjun Patel';
+  const done=CASES.filter(c=>c.agent===nm&&c.score!==null);
+  document.getElementById('tContent').innerHTML=`<div class="panel"><div class="section-hd"><div class="section-title">Completed Cases</div></div><table class="tbl"><thead><tr><th>Case</th><th>Auditor</th><th>Type</th><th>Score</th><th>Status</th><th>Date</th><th>Action</th></tr></thead><tbody>${done.map(c=>`<tr><td style="font-weight:700;color:var(--accent)">${c.id}</td><td style="color:var(--muted2)">${c.auditor}</td><td>${c.type}</td><td><span style="font-weight:800;color:${sCol(c.score)}">${c.score}%</span></td><td>${pill(c.status)}</td><td style="color:var(--muted2);font-size:11px">${c.date}</td><td>${c.status==='Audited'&&c.score<80?`<button onclick="raiseD('${c.id}')" style="padding:3px 10px;border-radius:5px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:var(--red);font-size:10px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Challenge</button>`:'—'}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function renderTDisp(){
+  const nm=CU?CU.name:'Arjun Patel',myD=DISPUTES.filter(d=>d.agent===nm);
+  document.getElementById('tContent').innerHTML=`<div class="panel"><div class="section-hd"><div class="section-title">My Disputes</div></div>${myD.length===0?'<div style="text-align:center;padding:32px;color:var(--muted);">No disputes filed.</div>':''}${myD.map(d=>`<div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:10px;padding:14px;margin-bottom:10px;"><div class="fl" style="justify-content:space-between;margin-bottom:8px;"><span style="font-weight:800;color:var(--accent)">${d.id}</span><span class="clock-badge ${d.hrs>d.sla?'cc':'cw'}">⏱ ${d.hrs}h / ${d.sla}h</span></div><div style="font-size:12px;color:var(--muted2);margin-bottom:4px;">Auditor: <b style="color:var(--text)">${d.auditor}</b></div><div style="font-size:12px;margin-bottom:8px;">${d.reason}</div><span class="pill ${d.hrs>d.sla?'p-atrisk':'p-disputed'}">${d.hrs>d.sla?'At Risk':'Active'}</span></div>`).join('')}</div>`;
+}
+async function raiseD(caseId){
+  const c=CASES.find(x=>x.id===caseId);if(!c)return;
+  const nm=CU?CU.name:'Arjun Patel',reason=prompt(`Dispute reason for ${caseId}:`);
+  if(!reason)return;
+  DISPUTES.push({id:caseId,agent:nm,auditor:c.auditor,hrs:0,sla:48,site:c.site,reason});
+  c.status='Disputed';document.getElementById('dBadge').textContent=DISPUTES.length;
+  await apiCall('POST','/disputes',{caseId,reason});
+  alert(`Dispute raised for ${caseId}.`);renderTComp();
+}
+
+// ── AUDITOR ───────────────────────────────────────────────────────────────────
+// ── AUDITOR EXTENDED DATA ─────────────────────────────────────────────────────
+let BIN_CASES=[
+  {id:'C-1300',agent:'Neha Gupta',site:'India',type:'Inbound',auditType:'Pass',execDate:'2024-01-14',assignedDate:'2024-01-15',assignedHrs:28,status:'Pending',accepted:false},
+  {id:'C-1301',agent:'Juan Reyes',site:'Manila',type:'Chat',auditType:'Fail',execDate:'2024-01-13',assignedDate:'2024-01-15',assignedHrs:14,status:'Pending',accepted:false},
+  {id:'C-1302',agent:'Vikram Nair',site:'India',type:'Outbound',auditType:'Execution & Bug',execDate:'2024-01-14',assignedDate:'2024-01-14',assignedHrs:36,status:'Pending',accepted:false},
+];
+let WORKFLOW_CASES=[
+  {id:'C-1202',agent:'Vikram Nair',auditor:'Sara Khan',site:'India',type:'Outbound',auditType:'Pass',execDate:'2024-01-14',assignedDate:'2024-01-13',assignedHrs:52,slaBreach:true,status:'In Progress',errors:0,success:0},
+  {id:'C-1206',agent:'Arjun Patel',auditor:'Sara Khan',site:'India',type:'Outbound',auditType:'Execution & Bug',execDate:'2024-01-15',assignedDate:'2024-01-15',assignedHrs:18,slaBreach:false,status:'In Progress',errors:0,success:0},
+  {id:'C-1207',agent:'Arjun Patel',auditor:'Rahul Mehta',site:'India',type:'Chat',auditType:'Exploratory',execDate:'2024-01-14',assignedDate:'2024-01-14',assignedHrs:30,slaBreach:false,status:'Completed',errors:2,success:5},
+  {id:'C-1208',agent:'Arjun Patel',auditor:'Sara Khan',site:'India',type:'Email',auditType:'Fail',execDate:'2024-01-13',assignedDate:'2024-01-13',assignedHrs:48,slaBreach:true,status:'Completed',errors:3,success:4},
+];
+const ASSOCIATES=[
+  {name:'Arjun Patel',site:'India',totalAudits:5,feedbackPending:2,feedbackAccepted:3,lastActivity:'2024-01-15',avgScore:77,trend:'up'},
+  {name:'Neha Gupta',site:'India',totalAudits:4,feedbackPending:3,feedbackAccepted:1,lastActivity:'2024-01-14',avgScore:57,trend:'down'},
+  {name:'Vikram Nair',site:'India',totalAudits:3,feedbackPending:0,feedbackAccepted:3,lastActivity:'2024-01-15',avgScore:86,trend:'up'},
+  {name:'Divya Reddy',site:'India',totalAudits:2,feedbackPending:1,feedbackAccepted:1,lastActivity:'2024-01-12',avgScore:67,trend:'flat'},
+];
+// PQE Form sections mapped from the PDF
+const PQE_SECTIONS={
+  'Pass':[
+    {code:'P1',q:'Was testing done with the correct set up (specific test accounts, beta app version, devices)?'},
+    {code:'P2',q:'Did the agent proactively communicate if a test case is unclear or product experience updated?'},
+    {code:'P3',q:'Was there any indication the test was completed on member data vs. vendor set up data?'},
+    {code:'P4',q:'If "Passed", was the correct Test Rail test case updated as "Passed" with screenshot before EOD?'},
+    {code:'P5',q:'Did the agent miss any Blocker / Critical bug when executing the test cases?'},
+    {code:'P6',q:'Did the agent miss any cosmetic / less functionality impacting bug?'},
+    {code:'P7',q:'Did agent perform NBA (Next Best Action) and attach correct screenshot/video?'},
+  ],
+  'Fail':[
+    {code:'F1',q:'Testing steps are followed thoroughly and completely and proved in the screenshots?'},
+    {code:'F2',q:'Did the agent proactively communicate if a test case is unclear or product experience updated?'},
+    {code:'F3',q:'Was there any indication the test was completed on member data vs. vendor set up data?'},
+    {code:'F4',q:'If test failed, was the TestRail case marked "Failed" by EOD with Jira ID, failure category, and screenshots?'},
+    {code:'F5',q:'Did the agent miss any Blocker / Critical bug?'},
+    {code:'F6',q:'Did the agent miss any other cosmetic / less functionality impacting bug?'},
+    {code:'F7',q:'Did agent perform NBA and attach correct screenshot/video?'},
+    {code:'F8',q:'Did agent search previous vendor submitted tickets to ensure no duplicate bug?'},
+    {code:'F9',q:'Did the agent respond to R&D/Developer inquiries within two business days?'},
+  ],
+  'Execution & Bug':[
+    {code:'EB1',q:'Testing steps are followed thoroughly and completely and proved in the screenshots?'},
+    {code:'EB2',q:'Did the agent proactively communicate if a test case is unclear?'},
+    {code:'EB3',q:'Was there any indication the test was completed on member data vs. vendor set up data?'},
+    {code:'EB4',q:'Was the TestRail case marked correctly by EOD with Jira ID, failure category, and screenshots?'},
+    {code:'EB5',q:'Did the agent miss any Blocker / Critical bug?'},
+    {code:'EB6',q:'Did the agent miss any cosmetic / less functionality impacting bug?'},
+    {code:'EB7',q:'Did agent search previous vendor submitted tickets for duplicate bugs?'},
+    {code:'EB8',q:'Bugs filed accurately to appropriate Jira project?'},
+    {code:'EB9',q:'Bug Title includes [Evaluation Prefix] concise bug description and clear Issue Description?'},
+    {code:'EB10',q:'Does bug include "Steps to Reproduce" and is it comprehensive?'},
+    {code:'EB11',q:'Does agent add the PQE Team as reviewers and respective team lead as watcher?'},
+    {code:'EB12',q:'Does bug include "Expected Results"?'},
+    {code:'EB13',q:'Does bug include "Actual Results"?'},
+    {code:'EB14',q:'Does bug include "Priority"?'},
+    {code:'EB15',q:'Does bug include Environment information?'},
+    {code:'EB16',q:'Does bug include appropriate "Found In"?'},
+    {code:'EB17',q:'Does bug include appropriate product category?'},
+    {code:'EB18',q:'Were the relevant labels applied?'},
+    {code:'EB19',q:'Was the relevant "Test Case Link: T####" added?'},
+    {code:'EB20',q:'Was there visual proof (screenshot or video) of the bug occurring?'},
+    {code:'EB21',q:'Did the agent respond to R&D/Developer inquiries within two business days?'},
+  ],
+  'Exploratory':[
+    {code:'EXPB1',q:'Testing steps are followed thoroughly and completely and proved in screenshots?'},
+    {code:'EXPB2',q:'Was there any indication the Exploratory test was completed on member data vs. vendor data?'},
+    {code:'EXPB3',q:'Bugs filed accurately to appropriate Jira project?'},
+    {code:'EXPB4',q:'Bug Title includes [Evaluation Prefix] concise bug description and clear Issue Description?'},
+    {code:'EXPB5',q:'Does bug include "Steps to Reproduce" and is it comprehensive?'},
+    {code:'EXPB6',q:'Does bug include "Expected Results"?'},
+    {code:'EXPB7',q:'Does bug include "Actual Results"?'},
+    {code:'EXPB8',q:'Does Agent add the PQE Team as reviewers and team lead as watchers?'},
+    {code:'EXPB9',q:'Does bug include "Priority"?'},
+    {code:'EXPB10',q:'Does bug include Environment information?'},
+    {code:'EXPB11',q:'Does bug include appropriate "Found In"?'},
+    {code:'EXPB12',q:'Does bug include appropriate product category?'},
+    {code:'EXPB13',q:'Has the test case been added or mentioned where this exploratory bug is raised?'},
+    {code:'EXPB14',q:'Were the relevant labels applied?'},
+    {code:'EXPB15',q:'Was there visual proof (screenshot or video) of the bug occurring?'},
+    {code:'EXPB16',q:'Did the agent respond to R&D/Developer inquiries within two business days?'},
+  ]
+};
+let activeQFormCase=null,qFormAnswers={},qFormType='Pass';
+
+function showAV(v){
+  document.querySelectorAll('#auditorPage .sb-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('#auditorPage .sb-item').forEach(i=>{if(i.getAttribute('onclick')&&i.getAttribute('onclick').includes(`'${v}'`))i.classList.add('active');});
+  const T={workflow:'Workflow Tracker',mybin:'My Bin',associates:'My Associates',qform:'Quality Form',disputes:'My Disputes',calibration:'Calibration'};
+  document.getElementById('aTitle').textContent=T[v]||v;
+  if(v==='workflow')renderWorkflow();
+  else if(v==='mybin')renderMyBin();
+  else if(v==='associates')renderAssociates();
+  else if(v==='qform')renderQForm();
+  else if(v==='disputes')renderAD();
+  else renderACal();
+}
+
+// ── TAB 1: WORKFLOW TRACKER ───────────────────────────────────────────────────
+function renderWorkflow(){
+  const nm=CU?CU.name:'Sara Khan';
+  const myW=WORKFLOW_CASES.filter(c=>c.auditor===nm);
+  const inProg=myW.filter(c=>c.status==='In Progress');
+  const done=myW.filter(c=>c.status==='Completed');
+  const breached=myW.filter(c=>c.slaBreach).length;
+  const totalErr=myW.reduce((a,c)=>a+c.errors,0);
+  const totalSucc=myW.reduce((a,c)=>a+c.success,0);
+  document.getElementById('aContent').innerHTML=`
+  <div class="kpi-row" style="grid-template-columns:repeat(5,1fr)">
+    <div class="kpi"><div class="kpi-label">In Progress</div><div class="kpi-val" style="color:var(--amber)">${inProg.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Completed</div><div class="kpi-val" style="color:var(--green)">${done.length}</div></div>
+    <div class="kpi"><div class="kpi-label">SLA Breached</div><div class="kpi-val" style="color:var(--red)">${breached}</div></div>
+    <div class="kpi"><div class="kpi-label">Total Errors Found</div><div class="kpi-val" style="color:var(--red)">${totalErr}</div></div>
+    <div class="kpi"><div class="kpi-label">Total Successes</div><div class="kpi-val" style="color:var(--green)">${totalSucc}</div></div>
+  </div>
+  <div class="panel">
+    <div class="section-hd"><div class="section-title">Assigned Audits — Tracking</div><div style="display:flex;gap:8px;">
+      <div style="font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(239,68,68,.12);color:var(--red);">🔴 SLA Breached</div>
+      <div style="font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--amber);">🟡 In Progress</div>
+      <div style="font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(16,185,129,.12);color:var(--green);">🟢 Completed</div>
+    </div></div>
+    <div style="overflow-x:auto;">
+    <table class="tbl" style="min-width:900px;">
+      <thead><tr>
+        <th>Case ID</th><th>Agent</th><th>Site</th><th>Audit Type</th><th>Exec Date</th><th>Assigned Date</th><th>Duration</th><th>SLA Status</th><th>Errors</th><th>Success</th><th>Status</th><th>Action</th>
+      </tr></thead>
+      <tbody>${myW.map(c=>`<tr style="${c.slaBreach?'background:rgba(239,68,68,.03);':''}">
+        <td style="font-weight:700;color:var(--accent)">${c.id}</td>
+        <td>${c.agent}</td>
+        <td>${sTg(c.site)}</td>
+        <td><span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:${c.auditType==='Pass'?'rgba(16,185,129,.15)':c.auditType==='Fail'?'rgba(239,68,68,.15)':c.auditType==='Execution & Bug'?'rgba(245,158,11,.15)':'rgba(124,58,237,.15)'};color:${c.auditType==='Pass'?'var(--green)':c.auditType==='Fail'?'var(--red)':c.auditType==='Execution & Bug'?'var(--amber)':'rgba(167,139,250,.9)'}">${c.auditType}</span></td>
+        <td style="color:var(--muted2);font-size:11px">${c.execDate}</td>
+        <td style="color:var(--muted2);font-size:11px">${c.assignedDate}</td>
+        <td><span class="clock-badge ${c.assignedHrs>48?'cc':c.assignedHrs>36?'cw':''}">⏱ ${c.assignedHrs}h</span></td>
+        <td>${c.slaBreach?'<span style="color:var(--red);font-size:11px;font-weight:700;">⚠ Breached</span>':'<span style="color:var(--green);font-size:11px;">✓ On Track</span>'}</td>
+        <td style="color:${c.errors>0?'var(--red)':'var(--muted2)'};font-weight:${c.errors>0?'700':'400'}">${c.errors}</td>
+        <td style="color:${c.success>0?'var(--green)':'var(--muted2)'};font-weight:${c.success>0?'700':'400'}">${c.success}</td>
+        <td>${pill(c.status==='In Progress'?'Pending Audit':c.status==='Completed'?'Audited':'New')}</td>
+        <td>${c.status==='In Progress'?`<button onclick="openQFormForCase('${c.id}')" style="padding:3px 10px;border-radius:5px;background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(0,200,255,.1));border:1px solid rgba(0,200,255,.25);color:var(--accent);font-size:10px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Score →</button>`:'<span style="color:var(--muted);font-size:10px">Done</span>'}</td>
+      </tr>`).join('')}
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="panel"><div class="section-hd"><div class="section-title">Error vs Success Trend</div></div><canvas id="errSuccC" height="160"></canvas></div>
+    <div class="panel"><div class="section-hd"><div class="section-title">Audit Type Breakdown</div></div><canvas id="auditTypeC" height="160"></canvas></div>
+  </div>`;
+  requestAnimationFrame(()=>{
+    const e1=document.getElementById('errSuccC'),e2=document.getElementById('auditTypeC');if(!e1||!e2)return;
+    CHARTS.es=new Chart(e1,{type:'bar',data:{labels:myW.map(c=>c.id),datasets:[{label:'Errors',data:myW.map(c=>c.errors),backgroundColor:'rgba(239,68,68,0.6)',borderRadius:4},{label:'Success',data:myW.map(c=>c.success),backgroundColor:'rgba(16,185,129,0.6)',borderRadius:4}]},options:{responsive:true,plugins:{legend:{labels:CL},tooltip:CTIP},scales:{x:{grid:CG,ticks:CT,border:CB},y:{grid:CG,ticks:CT,border:CB}}}});
+    const types={};myW.forEach(c=>{types[c.auditType]=(types[c.auditType]||0)+1;});
+    CHARTS.at=new Chart(e2,{type:'doughnut',data:{labels:Object.keys(types),datasets:[{data:Object.values(types),backgroundColor:['#10b981','#ef4444','#f59e0b','#7c3aed'],borderColor:'#0c1429',borderWidth:3}]},options:{responsive:true,plugins:{legend:{position:'right',labels:CL},tooltip:CTIP}}});
+  });
+}
+
+// ── TAB 2: MY BIN ─────────────────────────────────────────────────────────────
+function renderMyBin(){
+  const pending=BIN_CASES.filter(c=>!c.accepted);
+  const accepted=BIN_CASES.filter(c=>c.accepted);
+  document.getElementById('aContent').innerHTML=`
+  <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi"><div class="kpi-label">Awaiting Acceptance</div><div class="kpi-val" style="color:var(--amber)">${pending.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Accepted</div><div class="kpi-val" style="color:var(--green)">${accepted.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Total in Bin</div><div class="kpi-val" style="color:var(--accent)">${BIN_CASES.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Bin Capacity</div><div class="kpi-val" style="color:${BIN_CASES.length>=8?'var(--red)':'var(--green)'}">${BIN_CASES.length}/10</div></div>
+  </div>
+  <div style="background:rgba(0,200,255,.05);border:1px solid rgba(0,200,255,.15);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:18px;">ℹ️</span>
+    <div style="font-size:12px;color:var(--muted2);">Manager pushes cases to your bin. Review and <b style="color:var(--accent)">Accept</b> to move to Workflow Tracker, or <b style="color:var(--red)">Reject</b> to return to the manager queue. Best practice: Accept within <b style="color:#fff">4 hours</b> to maintain SLA.</div>
+  </div>
+  ${pending.length>0?`<div class="panel" style="margin-bottom:16px;"><div class="section-hd"><div class="section-title">Pending Acceptance</div><div class="at-risk-alert">Action Required</div></div>
+  ${pending.map(c=>`<div style="background:var(--card2);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:14px;margin-bottom:10px;">
+    <div class="fl" style="justify-content:space-between;margin-bottom:10px;">
+      <div class="fl"><span style="font-weight:800;color:var(--accent);font-size:14px;">${c.id}</span>${sTg(c.site)}<span style="padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;background:rgba(245,158,11,.15);color:var(--amber)">${c.auditType}</span></div>
+      <span class="clock-badge cw">⏱ Assigned ${c.assignedHrs}h ago</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div style="font-size:11px;"><span style="color:var(--muted);">Agent</span><br><b>${c.agent}</b></div>
+      <div style="font-size:11px;"><span style="color:var(--muted);">Type</span><br><b>${c.type}</b></div>
+      <div style="font-size:11px;"><span style="color:var(--muted);">Audit Type</span><br><b>${c.auditType}</b></div>
+      <div style="font-size:11px;"><span style="color:var(--muted);">Exec Date</span><br><b>${c.execDate}</b></div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="acceptBinCase('${c.id}')" style="flex:1;padding:8px;border-radius:8px;background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(0,200,255,.1));border:1px solid rgba(16,185,129,.3);color:var(--green);font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">✓ Accept Case</button>
+      <button onclick="rejectBinCase('${c.id}')" style="padding:8px 16px;border-radius:8px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--red);font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">✗ Return</button>
+    </div>
+  </div>`).join('')}
+  </div>`:''}
+  ${accepted.length>0?`<div class="panel"><div class="section-hd"><div class="section-title">Accepted Cases</div></div>
+  <table class="tbl"><thead><tr><th>Case ID</th><th>Agent</th><th>Site</th><th>Audit Type</th><th>Exec Date</th><th>Status</th></tr></thead>
+  <tbody>${accepted.map(c=>`<tr><td style="font-weight:700;color:var(--accent)">${c.id}</td><td>${c.agent}</td><td>${sTg(c.site)}</td><td>${c.auditType}</td><td style="color:var(--muted2);font-size:11px">${c.execDate}</td><td>${pill('Pending Audit')}</td></tr>`).join('')}
+  </tbody></table></div>`:''}`;
+}
+function acceptBinCase(id){
+  const c=BIN_CASES.find(x=>x.id===id);if(!c)return;
+  c.accepted=true;
+  const nm=CU?CU.name:'Sara Khan';
+  WORKFLOW_CASES.push({id:c.id,agent:c.agent,auditor:nm,site:c.site,type:c.type,auditType:c.auditType,execDate:c.execDate,assignedDate:c.assignedDate,assignedHrs:c.assignedHrs,slaBreach:c.assignedHrs>48,status:'In Progress',errors:0,success:0});
+  document.getElementById('binBadge').textContent=BIN_CASES.filter(x=>!x.accepted).length;
+  renderMyBin();
+}
+function rejectBinCase(id){
+  if(!confirm('Return this case to the manager queue?'))return;
+  BIN_CASES=BIN_CASES.filter(x=>x.id!==id);
+  document.getElementById('binBadge').textContent=BIN_CASES.filter(x=>!x.accepted).length;
+  renderMyBin();
+}
+
+// ── TAB 3: MY ASSOCIATES ──────────────────────────────────────────────────────
+function renderAssociates(){
+  const notAccepted=ASSOCIATES.filter(a=>a.feedbackPending>0);
+  document.getElementById('aContent').innerHTML=`
+  <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi"><div class="kpi-label">Total Associates</div><div class="kpi-val" style="color:var(--accent)">${ASSOCIATES.length}</div></div>
+    <div class="kpi"><div class="kpi-label">Pending Feedback</div><div class="kpi-val" style="color:var(--amber)">${notAccepted.length}</div><div class="kpi-sub">haven't acknowledged</div></div>
+    <div class="kpi"><div class="kpi-label">Feedback Accepted</div><div class="kpi-val" style="color:var(--green)">${ASSOCIATES.filter(a=>a.feedbackPending===0).length}</div></div>
+    <div class="kpi"><div class="kpi-label">At-Risk Associates</div><div class="kpi-val" style="color:var(--red)">${ASSOCIATES.filter(a=>a.avgScore<65).length}</div><div class="kpi-sub">score below 65%</div></div>
+  </div>
+  ${notAccepted.length>0?`<div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:18px;">⚠️</span>
+    <div style="font-size:12px;color:var(--muted2);"><b style="color:var(--amber)">${notAccepted.length} associate(s)</b> have not yet acknowledged feedback. Best practice: Follow up within <b style="color:#fff">24 hours</b> of audit completion.</div>
+  </div>`:''}
+  <div class="panel">
+    <div class="section-hd"><div class="section-title">Associate Feedback Status</div></div>
+    ${ASSOCIATES.map(a=>`<div style="background:var(--card2);border:1px solid ${a.feedbackPending>0?'rgba(245,158,11,.2)':'rgba(16,185,129,.15)'};border-radius:12px;padding:14px;margin-bottom:10px;">
+      <div class="fl" style="justify-content:space-between;margin-bottom:10px;">
+        <div class="fl">
+          <div class="av-sm" style="background:${sCol(a.avgScore)}30;border:1px solid ${sCol(a.avgScore)}50;color:${sCol(a.avgScore)};width:32px;height:32px;">${a.name.split(' ').map(x=>x[0]).join('')}</div>
+          <div><div style="font-size:13px;font-weight:700;">${a.name}</div><div style="font-size:10px;color:var(--muted);">${a.site} · Last active: ${a.lastActivity}</div></div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:18px;font-weight:900;color:${sCol(a.avgScore)}">${a.avgScore}%</div>
+          <div style="font-size:10px;color:${a.trend==='up'?'var(--green)':a.trend==='down'?'var(--red)':'var(--muted2)'}">${a.trend==='up'?'↑ Improving':a.trend==='down'?'↓ Declining':'→ Stable'}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div style="font-size:11px;text-align:center;padding:8px;background:rgba(255,255,255,.03);border-radius:8px;"><div style="color:var(--muted);margin-bottom:2px;">Total Audits</div><b>${a.totalAudits}</b></div>
+        <div style="font-size:11px;text-align:center;padding:8px;background:rgba(245,158,11,.07);border-radius:8px;border:1px solid rgba(245,158,11,.15);"><div style="color:var(--amber);margin-bottom:2px;">Feedback Pending</div><b style="color:var(--amber)">${a.feedbackPending}</b></div>
+        <div style="font-size:11px;text-align:center;padding:8px;background:rgba(16,185,129,.07);border-radius:8px;border:1px solid rgba(16,185,129,.15);"><div style="color:var(--green);margin-bottom:2px;">Feedback Accepted</div><b style="color:var(--green)">${a.feedbackAccepted}</b></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        ${a.feedbackPending>0?`<button onclick="sendReminder('${a.name}')" style="flex:1;padding:7px;border-radius:7px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--amber);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">📢 Send Reminder</button>`:''}
+        <button onclick="scheduleCoaching('${a.name}')" style="flex:1;padding:7px;border-radius:7px;background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.2);color:var(--accent);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">📅 Schedule Coaching</button>
+        ${a.avgScore<65?`<button onclick="flagAtRisk('${a.name}')" style="padding:7px 12px;border-radius:7px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:var(--red);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">🚩 Flag</button>`:''}
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+function sendReminder(name){alert(`📢 Reminder sent to ${name} to acknowledge pending feedback.\nThey will receive a notification within the system.`);}
+function scheduleCoaching(name){alert(`📅 Coaching session scheduled with ${name}.\nCalendar invite will be sent. Best practice: Conduct within 24hrs of audit.`);}
+function flagAtRisk(name){alert(`🚩 ${name} has been flagged as at-risk and escalated to the Manager for review.`);}
+
+// ── TAB 4: QUALITY FORM ───────────────────────────────────────────────────────
+let qFormData={};
+let sbsAnswer=null;
+
+// AGENT 1+2 VALIDATED: "Comment if Not Met" lines in PDF are HELP TEXT for auditors,
+// NOT separate input fields. Only Met/Not Met radio answers are collected per criterion.
+// Q1-13 = header. Q14-119 = audit criteria (branched by type). Q120 = side-by-side.
+const PQE_AUDIT_CRITERIA={
+  // Pass (P1-P7) — hint = help text shown to auditor, NOT a separate input field
+  Pass:[
+    {code:'P1',q:'Was testing done with the correct set up?',hint:'Check: specific test accounts, correct beta app version number, correct devices used — all proved in screenshots.'},
+    {code:'P2',q:'Did the agent proactively communicate if a test case is unclear or if the product experience was updated, making the test case outdated/inaccurate?',hint:'Look for Slack/email communication from agent flagging unclear or outdated test cases before or during execution.'},
+    {code:'P3',q:'Was there any indication the test was completed on member data vs. vendor set-up data?',hint:'e.g. vendor commented on a member post, messaged a member, connected with a member, posted on LI Company Group, etc. to complete the test. Flag if found.'},
+    {code:'P4',q:'If "Passed" — was the correct TestRail test case updated as "Passed" with applicable screenshot before end of day?',hint:'Verify TestRail shows "Passed" status with attached screenshot timestamped before EOD on the test run date.'},
+    {code:'P5',q:'Did the agent miss any Blocker / Critical bug when executing the test cases?',hint:'Review the executed screens/flows. If a Blocker or Critical severity bug is visible but not filed, mark Not Met.'},
+    {code:'P6',q:'Did the agent miss any cosmetic / less functionality impacting bug when executing the test cases?',hint:'Lower severity bugs (UI misalignment, copy issues, minor UX) — if visible and not filed, mark Not Met.'},
+    {code:'P7',q:'Did the agent perform NBA (Next Best Action) and attach correct screenshot/video of NBA performed?',hint:'NBA must be documented with screenshot or video evidence showing the next best action was taken.'},
+  ],
+  // Fail (F1-F9)
+  Fail:[
+    {code:'F1',q:'Testing steps are followed thoroughly and completely, proved in the screenshots?',hint:'Check: specific test accounts, beta app version number, devices — all clearly shown in attached screenshots.'},
+    {code:'F2',q:'Did the agent proactively communicate if a test case is unclear or if the product experience was updated, making the test case outdated/inaccurate?',hint:'Look for agent communication flagging unclear or outdated test cases.'},
+    {code:'F3',q:'Was there any indication the test was completed on member data vs. vendor set-up data?',hint:'e.g. vendor commented on a member post, messaged a member, connected with a member, posted on LI Company Group, etc. Flag if found.'},
+    {code:'F4',q:'If test failed — was the correct TestRail case marked "Failed" by EOD, including: (1) relevant Jira ID, (2) failure category ("Still Broken" or "New"), and (3) attached screenshots?',hint:'All three must be present: Jira ID, correct failure category label, and screenshot evidence — all before end of day.'},
+    {code:'F5',q:'Did the agent miss any Blocker / Critical bug when executing the test cases?',hint:'If a Blocker/Critical severity bug is observable in evidence but not filed, mark Not Met.'},
+    {code:'F6',q:'Did the agent miss any other cosmetic / less functionality impacting bug when executing the test cases?',hint:'Lower severity bugs not filed. Mark Not Met if found.'},
+    {code:'F7',q:'Did the agent perform NBA (Next Best Action) and attach correct screenshot/video?',hint:'NBA must be documented with screenshot or video evidence.'},
+    {code:'F8',q:'Did the agent search previous vendor submitted tickets (and/or test case run history) to ensure no duplicate bug was already submitted? If duplicate existed, did agent update the test case as "Failed" with the existing filed bug?',hint:'Check ticket history for duplicates. If a duplicate exists and agent filed a new one rather than linking the existing, mark Not Met.'},
+    {code:'F9',q:'Did the agent respond to R&D/Developer inquiries within two business days, or proactively communicate delays with an updated timeline?',hint:'e.g. access issues, test setup challenges, difficulty reproducing the issue. Check for timely response or proactive communication.'},
+  ],
+  // Execution & Bug (EB1-EB21) — split into sub-groups for readability
+  'Execution & Bug':[
+    // Execution sub-group
+    {code:'EB1',q:'Testing steps are followed thoroughly and completely, proved in the screenshots?',hint:'Check: specific test accounts, beta app version number, correct devices — all proved in screenshots.',group:'Execution'},
+    {code:'EB2',q:'Did the agent proactively communicate if a test case is unclear or product experience was updated?',hint:'Look for agent communication flagging unclear or outdated test cases before or during execution.',group:'Execution'},
+    {code:'EB3',q:'Was there any indication the test was completed on member data vs. vendor set-up data?',hint:'e.g. vendor commented on a member post, messaged a member, connected with a member, posted on LI Company Group.',group:'Execution'},
+    // Bug Filing sub-group
+    {code:'EB4',q:'If test failed — was the correct TestRail case marked "Failed" by EOD, including: (1) Jira ID, (2) failure category ("Still Broken" or "New"), and (3) screenshots?',hint:'All three required: Jira ID, failure category, screenshot evidence — all before EOD.',group:'Bug Filing'},
+    {code:'EB5',q:'Did the agent miss any Blocker / Critical bug when executing the test cases?',hint:'If Blocker/Critical bug is observable in evidence but not filed, mark Not Met.',group:'Bug Filing'},
+    {code:'EB6',q:'Did the agent miss any cosmetic / less functionality impacting bug?',hint:'Lower severity bugs not filed. Mark Not Met if found.',group:'Bug Filing'},
+    {code:'EB7',q:'Did agent search previous vendor submitted tickets to ensure no duplicate bug? If duplicate existed, did agent update the test case as "Failed" with the existing filed bug?',hint:'Check ticket history. If duplicate exists and agent filed new rather than linking existing, mark Not Met.',group:'Bug Filing'},
+    {code:'EB8',q:'Bugs filed accurately to the appropriate Jira project?',hint:'Verify the Jira project key matches the correct product/feature area. Wrong project = Not Met.',group:'Bug Filing'},
+    // Bug Quality sub-group
+    {code:'EB9',q:'Bug Title includes [Evaluation Prefix], concise bug description, and clear Issue Description?',hint:'Format: [Eval Prefix] Short description. Issue description should be self-contained and understandable.',group:'Bug Quality'},
+    {code:'EB10',q:'Does bug include "Steps to Reproduce" and is it comprehensive?',hint:'Steps must be numbered, reproducible, and include all prerequisites (account type, version, device, etc.).',group:'Bug Quality'},
+    {code:'EB11',q:'Does agent add the PQE Team as reviewers and respective team lead as watcher?',hint:'Check Jira ticket reviewers and watchers fields — both PQE Team and team lead must be present.',group:'Bug Quality'},
+    {code:'EB12',q:'Does bug include "Expected Results"?',hint:'Expected results must clearly state what the correct/expected behaviour should be.',group:'Bug Quality'},
+    {code:'EB13',q:'Does bug include "Actual Results"?',hint:'Actual results must clearly state what actually happened, contrasting with expected.',group:'Bug Quality'},
+    {code:'EB14',q:'Does bug include "Priority"?',hint:'Priority field must be set (Blocker / Critical / Major / Minor / Trivial). Cannot be empty.',group:'Bug Quality'},
+    {code:'EB15',q:'Does bug include Environment information?',hint:'Must include: OS version, app version, device model, network conditions where applicable.',group:'Bug Quality'},
+    {code:'EB16',q:'Does bug include appropriate "Found In" field?',hint:'Found In must be set to "Public Ramp" (or equivalent applicable value). Cannot be blank.',group:'Bug Quality'},
+    {code:'EB17',q:'Does bug include appropriate product category?',hint:'Product category must match the feature/surface being tested. Check against the test case brief.',group:'Bug Quality'},
+    {code:'EB18',q:'Were the relevant labels applied?',hint:'Labels help routing and reporting. Verify correct label set is applied per the evaluation guidelines.',group:'Bug Quality'},
+    {code:'EB19',q:'Was the relevant "Test Case Link: T####" added?',hint:'The exact TestRail test case reference (T#### format) must appear in the Jira ticket.',group:'Bug Quality'},
+    {code:'EB20',q:'Was there visual proof (screenshot or video) of the bug occurring?',hint:'Evidence must clearly show the bug state — not just the test setup. Screenshot or video required.',group:'Bug Quality'},
+    {code:'EB21',q:'Did the agent respond to R&D/Developer inquiries within two business days, or proactively communicate delays with an updated timeline?',hint:'e.g. access issues, test setup challenges, difficulty reproducing the issue. Timely response required.',group:'Bug Quality'},
+  ],
+  // Exploratory (EXPB1-EXPB16)
+  Exploratory:[
+    {code:'EXPB1',q:'Testing steps are followed thoroughly and completely, proved in the screenshots?',hint:'Check: specific test accounts, beta app version number, devices — all proved in screenshots.',group:'Execution'},
+    {code:'EXPB2',q:'Was there any indication the Exploratory test was completed on member data vs. vendor set-up data?',hint:'e.g. vendor commented on a member post, messaged a member, connected with a member, posted on LI Company Group.',group:'Execution'},
+    {code:'EXPB3',q:'Bugs filed accurately to the appropriate Jira project?',hint:'Verify correct Jira project key for the feature/product area.',group:'Bug Filing'},
+    {code:'EXPB4',q:'Bug Title includes [Evaluation Prefix], concise bug description, and clear Issue Description?',hint:'Format: [Eval Prefix] Short description — must be self-contained and understandable.',group:'Bug Filing'},
+    {code:'EXPB5',q:'Does bug include "Steps to Reproduce" and is it comprehensive?',hint:'Numbered steps, reproducible, with all prerequisites included.',group:'Bug Filing'},
+    {code:'EXPB6',q:'Does bug include "Expected Results"?',hint:'Must clearly state the correct/expected behaviour.',group:'Bug Filing'},
+    {code:'EXPB7',q:'Does bug include "Actual Results"?',hint:'Must clearly state what happened, contrasting with expected.',group:'Bug Filing'},
+    {code:'EXPB8',q:'Does agent add the PQE Team as reviewers and respective team lead as watchers?',hint:'Check Jira ticket — both PQE Team (reviewers) and team lead (watcher) must be present.',group:'Bug Filing'},
+    {code:'EXPB9',q:'Does bug include "Priority"?',hint:'Priority field must be set. Cannot be empty.',group:'Bug Filing'},
+    {code:'EXPB10',q:'Does bug include Environment information?',hint:'OS version, app version, device model, network conditions.',group:'Bug Filing'},
+    {code:'EXPB11',q:'Does bug include appropriate "Found In" field?',hint:'Must be set to "Public Ramp" or applicable equivalent.',group:'Bug Filing'},
+    {code:'EXPB12',q:'Does bug include appropriate product category?',hint:'Must match feature/surface being tested.',group:'Bug Filing'},
+    {code:'EXPB13',q:'Has the test case been added or mentioned where this exploratory bug is raised?',hint:'The exploratory bug must reference or link the related test case.',group:'Bug Filing'},
+    {code:'EXPB14',q:'Were the relevant labels applied?',hint:'Correct label set must be applied per evaluation guidelines.',group:'Bug Filing'},
+    {code:'EXPB15',q:'Was there visual proof (screenshot or video) of the bug occurring?',hint:'Evidence must clearly show the bug state.',group:'Bug Filing'},
+    {code:'EXPB16',q:'Did the agent respond to R&D/Developer inquiries within two business days, or proactively communicate delays with an updated timeline?',hint:'e.g. access issues, test setup challenges, difficulty reproducing. Timely response required.',group:'Bug Filing'},
+  ]
+};
+
+function renderQForm(){
+  const nm=CU?CU.name:'Sara Khan';
+  const pending=WORKFLOW_CASES.filter(c=>c.auditor===nm&&c.status==='In Progress');
+  if(!activeQFormCase&&pending.length>0)activeQFormCase=pending[0].id;
+  const selCase=WORKFLOW_CASES.find(c=>c.id===activeQFormCase)||pending[0];
+  if(!selCase){
+    document.getElementById('aContent').innerHTML=`<div class="panel"><div style="text-align:center;padding:40px;color:var(--muted);">No cases pending audit. Accept cases from My Bin or Workflow Tracker first.</div></div>`;
+    return;
+  }
+  // derive audit type from case
+  const auditType=selCase.auditType||'Pass';
+  const criteria=PQE_AUDIT_CRITERIA[auditType]||PQE_AUDIT_CRITERIA['Pass'];
+  // count answered radio questions (non-comment)
+  const radioQ=criteria.filter(q=>!q.type);
+  const answered=radioQ.filter(q=>qFormData['radio_'+q.code]).length;
+  const errors=radioQ.filter(q=>qFormData['radio_'+q.code]==='Not Met').length;
+  const success=radioQ.filter(q=>qFormData['radio_'+q.code]==='Met').length;
+  const pct=radioQ.length>0?Math.round(answered/radioQ.length*100):0;
+
+  document.getElementById('aContent').innerHTML=`
+  <!-- Case selector -->
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+    ${pending.map(c=>`<button onclick="selectQFormCase('${c.id}')" style="padding:5px 12px;border-radius:7px;border:1px solid ${c.id===activeQFormCase?'rgba(0,200,255,.5)':'var(--border)'};background:${c.id===activeQFormCase?'rgba(0,200,255,.12)':'transparent'};color:${c.id===activeQFormCase?'var(--accent)':'var(--muted2)'};font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">${c.id} · ${c.auditType}</button>`).join('')}
+  </div>
+
+  <!-- Sticky progress bar -->
+  <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:16px;">
+    <div style="flex:1;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:11px;"><span style="color:var(--muted);">Form progress</span><span style="color:var(--accent);font-weight:700;">${answered}/${radioQ.length} answered</span></div><div class="sbar-bg" style="height:6px;"><div class="sbar-fill" style="width:${pct}%;background:${pct===100?'var(--green)':pct>50?'var(--accent)':'var(--amber)'}"></div></div></div>
+    <div style="display:flex;gap:10px;font-size:12px;font-weight:700;">
+      <span style="color:var(--green);">✓ ${success} Met</span>
+      <span style="color:var(--red);">✗ ${errors} Not Met</span>
+      <span style="color:var(--muted2);">— ${radioQ.length-answered} Pending</span>
+    </div>
+  </div>
+
+  <!-- ONE long form -->
+  <div class="panel" style="padding:0;overflow:hidden;">
+
+    <!-- HEADER: purple band -->
+    <div style="background:linear-gradient(135deg,rgba(124,58,237,.25),rgba(0,200,255,.1));padding:20px 24px;border-bottom:1px solid var(--border);">
+      <div style="font-size:18px;font-weight:900;color:#fff;margin-bottom:2px;">PQE — Quality Audit Form</div>
+      <div style="font-size:12px;color:var(--muted2);">LinkedIn Product Quality Engineering · Apr 8, 2026</div>
+    </div>
+
+    <div style="padding:24px;">
+
+    <!-- SECTION: Form Header Fields -->
+    <div style="margin-bottom:28px;">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:16px;padding-bottom:6px;border-bottom:1px solid var(--border);">Form Header</div>
+
+      <!-- Q1: Repeat entry dropdown -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>1. Is this a repeat entry in the form?</div>
+        <select onchange="setQFData('q1',this.value)" style="width:100%;max-width:360px;background:rgba(8,13,30,.9);border:1px solid rgba(0,200,255,.2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;">
+          <option value="">Select your answer</option>
+          <option value="Yes" ${qFormData.q1==='Yes'?'selected':''}>Yes</option>
+          <option value="No" ${qFormData.q1==='No'?'selected':''}>No</option>
+        </select>
+      </div>
+
+      <!-- Q2: Reason for re-entry text -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>2. Reason for re-entry</div>
+        <input type="text" value="${qFormData.q2||''}" onchange="setQFData('q2',this.value)" placeholder="Enter reason for re-entry" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.15);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;"/>
+      </div>
+
+      <!-- Q3: Contains error radio -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px;"><span style="color:var(--red);margin-right:4px;">*</span>3. Does this audit contain any error?</div>
+        <div style="display:flex;gap:16px;">
+          ${['Yes','No'].map(v=>`<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
+            <input type="radio" name="q3" value="${v}" ${qFormData.q3===v?'checked':''} onchange="setQFData('q3','${v}')" style="accent-color:var(--accent);width:16px;height:16px;cursor:pointer;"/>
+            ${v}
+          </label>`).join('')}
+        </div>
+      </div>
+
+      <!-- Q4: Test Case Run Date -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>4. Test Case Run Date</div>
+        <input type="date" value="${qFormData.q4||selCase.execDate||''}" onchange="setQFData('q4',this.value)" style="background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.15);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;"/>
+      </div>
+
+      <!-- Q5: Test Case Audit Date -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>5. Test Case Audit Date</div>
+        <input type="date" value="${qFormData.q5||'2024-01-15'}" onchange="setQFData('q5',this.value)" style="background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.15);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;"/>
+      </div>
+
+      <!-- Q6: Auditor Name -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>6. Auditor Name</div>
+        <input type="text" value="${qFormData.q6||nm}" onchange="setQFData('q6',this.value)" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.15);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;"/>
+      </div>
+
+      <!-- Q7: Tester / Agent Name -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>7. Tester Name</div>
+        <input type="text" value="${qFormData.q7||selCase.agent}" onchange="setQFData('q7',this.value)" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.15);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;"/>
+      </div>
+
+      <!-- Q8: Supervisor -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>8. Supervisor</div>
+        <input type="text" value="${qFormData.q8||''}" placeholder="Supervisor name" onchange="setQFData('q8',this.value)" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.15);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;"/>
+      </div>
+
+      <!-- Q9: Site -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>9. Site</div>
+        <select onchange="setQFData('q9',this.value)" style="width:100%;max-width:360px;background:rgba(8,13,30,.9);border:1px solid rgba(0,200,255,.2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;">
+          <option value="">Select your answer</option>
+          <option value="India" ${(qFormData.q9||selCase.site)==='India'?'selected':''}>India</option>
+          <option value="Manila" ${(qFormData.q9||selCase.site)==='Manila'?'selected':''}>Manila</option>
+        </select>
+      </div>
+
+      <!-- Q10: Bug ID -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>10. Bug ID (Put NA if it is a pass audit type)</div>
+        <input type="text" value="${qFormData.q10||''}" placeholder="e.g. PROJ-1234 or NA" onchange="setQFData('q10',this.value)" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.15);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;"/>
+      </div>
+
+      <!-- Q11: Version dropdown -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>11. Version</div>
+        <select onchange="setQFData('q11',this.value)" style="width:100%;max-width:360px;background:rgba(8,13,30,.9);border:1px solid rgba(0,200,255,.2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;">
+          <option value="">Select your answer</option>
+          ${['v2.4.1','v2.4.0','v2.3.5','v2.3.0','v2.2.0','Other'].map(v=>`<option value="${v}" ${qFormData.q11===v?'selected':''}>${v}</option>`).join('')}
+        </select>
+      </div>
+
+      <!-- Q12: Test Case Number -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>12. Test Case Number</div>
+        <input type="text" value="${qFormData.q12||selCase.id}" onchange="setQFData('q12',this.value)" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.15);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;"/>
+      </div>
+
+      <!-- Q13: Audit Type dropdown -->
+      <div style="margin-bottom:8px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>13. Audit Type</div>
+        <select onchange="changeQFormType(this.value)" style="width:100%;max-width:360px;background:rgba(8,13,30,.9);border:1px solid rgba(0,200,255,.2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;">
+          ${['Pass','Fail','Execution & Bug','Exploratory'].map(t=>`<option value="${t}" ${t===auditType?'selected':''}>${t}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+
+    <!-- SECTION: Audit Type criteria -->
+    <div style="margin-bottom:28px;">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:16px;padding-bottom:6px;border-bottom:1px solid var(--border);">
+        ${auditType} Criteria
+        <span style="margin-left:8px;padding:2px 8px;border-radius:4px;font-size:9px;background:${auditType==='Pass'?'rgba(16,185,129,.15)':auditType==='Fail'?'rgba(239,68,68,.15)':auditType==='Execution & Bug'?'rgba(245,158,11,.15)':'rgba(124,58,237,.15)'};color:${auditType==='Pass'?'var(--green)':auditType==='Fail'?'var(--red)':auditType==='Execution & Bug'?'var(--amber)':'rgba(167,139,250,.9)'};">${auditType}</span>
+      </div>
+
+      ${criteria.map((q,idx)=>{
+        const isComment=q.type==='comment';
+        const parentVal=isComment?qFormData['radio_'+q.dependsOn]:'';
+        const showComment=isComment&&parentVal==='Not Met';
+        if(isComment&&!showComment)return''; // hide comment if parent is Met or unanswered
+        const val=isComment?qFormData['comment_'+q.dependsOn]||'':qFormData['radio_'+q.code]||'';
+        const qNum=13+idx+1;
+        if(isComment){
+          return`<div style="margin-bottom:14px;margin-left:24px;border-left:3px solid rgba(239,68,68,.3);padding-left:14px;">
+            <div style="font-size:12px;color:var(--muted2);margin-bottom:6px;"><span style="color:var(--red);margin-right:4px;">*</span>${q.label}</div>
+            <textarea onchange="setQFData('comment_${q.dependsOn}',this.value)" placeholder="Describe the issue in detail…" style="width:100%;background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:12px;outline:none;font-family:'Inter',sans-serif;min-height:60px;resize:vertical;">${qFormData['comment_'+q.dependsOn]||''}</textarea>
+          </div>`;
+        }
+        return`<div style="border:1px solid ${val==='Met'?'rgba(16,185,129,.25)':val==='Not Met'?'rgba(239,68,68,.25)':'rgba(0,180,255,.08)'};background:${val==='Met'?'rgba(16,185,129,.03)':val==='Not Met'?'rgba(239,68,68,.03)':'transparent'};border-radius:10px;padding:14px 16px;margin-bottom:10px;transition:border-color .2s;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+            <div style="flex:1;">
+              <div style="font-size:10px;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">${q.code} <span style="color:var(--red);font-size:12px;">*</span></div>
+              <div style="font-size:13px;line-height:1.65;color:var(--text);">${q.q}</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-shrink:0;margin-top:2px;">
+              <button onclick="setRadioAnswer('${q.code}','Met')" style="padding:7px 16px;border-radius:7px;background:${val==='Met'?'rgba(16,185,129,.25)':'rgba(16,185,129,.06)'};border:1px solid ${val==='Met'?'var(--green)':'rgba(16,185,129,.2)'};color:var(--green);font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">✓ Met</button>
+              <button onclick="setRadioAnswer('${q.code}','Not Met')" style="padding:7px 16px;border-radius:7px;background:${val==='Not Met'?'rgba(239,68,68,.22)':'rgba(239,68,68,.05)'};border:1px solid ${val==='Not Met'?'var(--red)':'rgba(239,68,68,.2)'};color:var(--red);font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">✗ Not Met</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- SECTION: Comments -->
+    <div style="margin-bottom:28px;">
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:16px;padding-bottom:6px;border-bottom:1px solid var(--border);">Comments</div>
+
+      <!-- Q120: Side by side audit -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px;"><span style="color:var(--red);margin-right:4px;">*</span>120. Did you do side-by-side audit?</div>
+        <div style="display:flex;gap:16px;">
+          ${['Yes','No'].map(v=>`<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;">
+            <input type="radio" name="q120" value="${v}" ${qFormData.q120===v?'checked':''} onchange="setQFData('q120','${v}')" style="accent-color:var(--accent);width:16px;height:16px;cursor:pointer;"/>
+            ${v}
+          </label>`).join('')}
+        </div>
+      </div>
+
+      <!-- General comments textarea -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px;">General Comments / Coaching Notes</div>
+        <textarea onchange="setQFData('generalNotes',this.value)" placeholder="Add overall coaching notes, observations, or context for this audit…" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.15);border-radius:8px;padding:10px 12px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;min-height:80px;resize:vertical;">${qFormData.generalNotes||''}</textarea>
+      </div>
+    </div>
+
+    <!-- Submit row -->
+    <div style="display:flex;gap:10px;padding-top:16px;border-top:1px solid var(--border);">
+      <button onclick="submitQForm()" style="flex:1;padding:13px;border-radius:9px;background:linear-gradient(135deg,var(--violet),var(--accent));border:none;color:#fff;font-weight:700;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;">Submit Quality Form →</button>
+      <button onclick="saveQFormDraft()" style="padding:13px 20px;border-radius:9px;background:transparent;border:1px solid var(--border2);color:var(--muted2);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;">💾 Save Draft</button>
+    </div>
+
+    </div><!-- end padding -->
+  </div><!-- end panel -->`;
+}
+
+function setQFData(key,val){qFormData[key]=val;}
+function setRadioAnswer(code,val){
+  qFormData['radio_'+code]=val;
+  // clear comment if switching to Met
+  if(val==='Met')delete qFormData['comment_'+code];
+  renderQForm();
+}
+function changeQFormType(t){
+  qFormType=t;
+  // update the workflow case audit type
+  const wc=WORKFLOW_CASES.find(c=>c.id===activeQFormCase);
+  if(wc)wc.auditType=t;
+  // clear criteria answers but keep header data
+  Object.keys(qFormData).forEach(k=>{if(k.startsWith('radio_')||k.startsWith('comment_'))delete qFormData[k];});
+  renderQForm();
+}
+function selectQFormCase(id){
+  activeQFormCase=id;
+  qFormData={};
+  const wc=WORKFLOW_CASES.find(c=>c.id===id);
+  if(wc)qFormType=wc.auditType||'Pass';
+  renderQForm();
+}
+function openQFormForCase(id){activeQFormCase=id;qFormData={};showAV('qform');}
+function saveQFormDraft(){alert('💾 Draft saved. All answers preserved. You can resume this audit at any time from the Workflow Tracker.');}
+async function submitQForm(){
+  const auditType=WORKFLOW_CASES.find(c=>c.id===activeQFormCase)?.auditType||'Pass';
+  const criteria=PQE_AUDIT_CRITERIA[auditType]||[];
+  const radioQ=criteria.filter(q=>!q.type);
+  const answered=radioQ.filter(q=>qFormData['radio_'+q.code]).length;
+  if(answered<radioQ.length){if(!confirm(`Only ${answered}/${radioQ.length} criteria answered. Submit anyway?`))return;}
+  const errors=radioQ.filter(q=>qFormData['radio_'+q.code]==='Not Met').length;
+  const success=radioQ.filter(q=>qFormData['radio_'+q.code]==='Met').length;
+  const wc=WORKFLOW_CASES.find(c=>c.id===activeQFormCase);
+  if(wc){wc.status='Completed';wc.errors=errors;wc.success=success;}
+  const sc=CASES.find(c=>c.id===activeQFormCase);
+  if(sc){sc.status='Audited';sc.score=Math.round((success/Math.max(1,answered))*100);}
+  await apiCall('POST','/audit-forms',{caseId:activeQFormCase,auditType,answers:qFormData,status:'Submitted'});
+  qFormData={};activeQFormCase=null;
+  alert(`✅ PQE Quality Form submitted!\n\n✓ Met: ${success}\n✗ Not Met: ${errors}\n\nFeedback logged and sent to agent. Coaching session recommended within 24hrs for any Not Met items.`);
+  showAV('workflow');
+}
+
+function renderAD(){
+  const nm=CU?CU.name:'Sara Khan',myD=DISPUTES.filter(d=>d.auditor===nm);
+  document.getElementById('aContent').innerHTML=`<div class="panel"><div class="at-risk-hd"><div class="section-title">Disputes Assigned to Me</div>${myD.some(d=>d.hrs>24)?`<div class="at-risk-alert">⚠ ${myD.filter(d=>d.hrs>24).length} Breached</div>`:''}</div>${myD.length===0?'<div style="text-align:center;padding:32px;color:var(--muted);">No disputes ✓</div>':''}${myD.map(d=>`<div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:10px;padding:14px;margin-bottom:10px;"><div class="fl" style="justify-content:space-between;margin-bottom:8px;"><span style="font-weight:800;color:var(--accent)">${d.id}</span><span class="clock-badge ${d.hrs>d.sla?'cc':'cw'}">⏱ ${d.hrs}h / ${d.sla}h</span></div><div style="font-size:12px;color:var(--muted2);margin-bottom:4px;">Agent: <b style="color:var(--text)">${d.agent}</b></div><div style="font-size:12px;margin-bottom:10px;color:var(--muted2);">${d.reason}</div><div style="display:flex;gap:8px;"><button onclick="resolveD('${d.id}','upheld')" style="flex:1;padding:7px;border-radius:7px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:var(--green);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">✓ Uphold</button><button onclick="resolveD('${d.id}','overturned')" style="flex:1;padding:7px;border-radius:7px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--amber);font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">↺ Overturn</button></div></div>`).join('')}</div>`;
+}
+function renderACal(){
+  const sc=[88,92,85,90,87,93,89,91,86,94];
+  document.getElementById('aContent').innerHTML=`<div class="grid-2"><div class="panel"><div class="section-hd"><div class="section-title">Calibration Session</div></div><div style="background:rgba(0,200,255,.05);border:1px solid rgba(0,200,255,.15);border-radius:10px;padding:16px;margin-bottom:14px;"><div style="font-size:12px;font-weight:700;margin-bottom:4px;">Next calibration</div><div style="font-size:20px;font-weight:900;color:var(--accent);">Jan 22, 2024</div><div style="font-size:11px;color:var(--muted);margin-top:4px;">10:00 AM IST · Virtual</div></div>${sc.map((s,i)=>`<div class="fl" style="justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(0,200,255,.05);"><span style="font-size:12px;color:var(--muted2);">Sample #${i+1}</span><div class="fl"><div class="sbar-bg" style="width:80px"><div class="sbar-fill" style="width:${s}%;background:${sCol(s)}"></div></div><span style="font-size:12px;font-weight:700;color:${sCol(s)};min-width:32px;text-align:right">${s}%</span></div></div>`).join('')}</div><div class="panel"><div class="section-hd"><div class="section-title">Score Distribution</div></div><canvas id="calC" height="220"></canvas></div></div>`;
+  requestAnimationFrame(()=>{const el=document.getElementById('calC');if(!el)return;CHARTS.cal=new Chart(el,{type:'bar',data:{labels:['<60','60-70','70-80','80-90','90-100'],datasets:[{label:'Cases',data:[1,2,4,8,5],backgroundColor:'rgba(0,200,255,0.6)',borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:CTIP},scales:{x:{grid:CG,ticks:CT,border:CB},y:{grid:CG,ticks:CT,border:CB}}}});});
+}
+function resolveD(id,outcome){
+  DISPUTES=DISPUTES.filter(x=>x.id!==id);const c=CASES.find(x=>x.id===id);if(c)c.status='Audited';
+  document.getElementById('dBadge').textContent=DISPUTES.length;
+  alert(`Dispute ${id} ${outcome==='upheld'?'upheld':'overturned'}.`);renderAD();
+}
+
+// ── SCORING ───────────────────────────────────────────────────────────────────
+let SCid=null,SCmode=null,SCvals=[];
+function openScoring(id,mode){
+  SCid=id;SCmode=mode;SCvals=RUBRIC.map(()=>7);
+  const c=CASES.find(x=>x.id===id);
+  document.getElementById('scoringContent').innerHTML=`
+    <div class="m-title" style="text-align:left;margin-bottom:4px;">Score Case ${id}</div>
+    <div class="m-sub" style="text-align:left;margin-bottom:16px;">Agent: <b style="color:#fff">${c.agent}</b> · ${c.type} · ${c.date}</div>
+    <div style="background:rgba(0,200,255,.05);border:1px solid rgba(0,200,255,.15);border-radius:10px;padding:14px;margin-bottom:18px;">
+      <div style="display:grid;grid-template-columns:2fr 1fr 2fr 1fr;gap:4px;font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;"><span>Criterion</span><span style="text-align:right">Wt%</span><span style="text-align:center">Score (0–10)</span><span style="text-align:right">Pts</span></div>
+      ${RUBRIC.map((r,i)=>`<div class="crit-row"><div style="flex:1;font-size:12px;font-weight:600;">${r.name}</div><div style="font-size:10px;color:var(--muted);width:30px;text-align:right">${r.weight}</div><div style="flex:1.5;padding:0 8px;"><input type="range" min="0" max="10" value="7" step="1" oninput="updS(${i},this.value)"/></div><div id="sv${i}" style="width:32px;text-align:center;font-size:13px;font-weight:800;color:${sCol(70)}">7</div></div>`).join('')}
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-bottom:18px;">
+      <div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Weighted Score</div><div style="font-size:36px;font-weight:900;" id="totS">70%</div></div>
+      <div style="text-align:right"><div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Grade</div><div style="font-size:22px;font-weight:800;" id="gradeS">B</div></div>
+    </div>
+    <div style="margin-bottom:16px;"><div class="field-label">Coaching Notes</div><textarea placeholder="Add notes…" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(0,200,255,.18);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif;min-height:68px;resize:vertical;"></textarea></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="submitS()" style="flex:1;padding:11px;border-radius:9px;background:linear-gradient(135deg,var(--violet),var(--accent));border:none;color:#fff;font-weight:700;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;">Submit Score →</button>
+      <button onclick="closeScoring()" style="padding:11px 16px;border-radius:9px;background:transparent;border:1px solid var(--border2);color:var(--muted);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;">Cancel</button>
+    </div>`;
+  document.getElementById('scoringOverlay').classList.add('open');
+  calcS();
+}
+function updS(i,v){SCvals[i]=parseInt(v);const el=document.getElementById(`sv${i}`);if(el){el.textContent=v;el.style.color=sCol(v*10);}calcS();}
+function calcS(){
+  const t=Math.round(RUBRIC.reduce((s,r,i)=>s+(SCvals[i]/10)*r.weight,0));
+  const el=document.getElementById('totS'),eg=document.getElementById('gradeS');
+  if(el){el.textContent=t+'%';el.style.color=sCol(t);}
+  if(eg){eg.textContent=t>=90?'A':t>=80?'B':t>=70?'C':t>=60?'D':'F';eg.style.color=sCol(t);}
+}
+function submitS(){
+  const t=Math.round(RUBRIC.reduce((s,r,i)=>s+(SCvals[i]/10)*r.weight,0));
+  const c=CASES.find(x=>x.id===SCid);if(c){c.score=t;c.status='Audited';}
+  closeScoring();
+  if(SCmode==='auditor')renderAQ();else renderTMC();
+  alert(`✅ Case ${SCid} scored: ${t}%`);
+}
+function closeScoring(){document.getElementById('scoringOverlay').classList.remove('open');}
+
+// ── UPLOAD / EXPORT ───────────────────────────────────────────────────────────
+function openUpload(){document.getElementById('uploadOverlay').classList.add('open');}
+function closeUpload(){document.getElementById('uploadOverlay').classList.remove('open');document.getElementById('valResults').style.display='none';document.getElementById('dropZone').style.display='';}
+function simUpload(){document.getElementById('dropZone').style.display='none';document.getElementById('valResults').style.display='block';}
+function confirmUpload(){closeUpload();alert('✅ 844 cases imported.');}
+function exportPPT(){alert('📊 Generating...\n\nSlide 1: KPIs\nSlide 2: WoW Trend\nSlide 3: Agent Leaderboard\nSlide 4: Supervisor Roll-up\nSlide 5: Error Taxonomy\nSlide 6: Disputes\nSlide 7: Velocity\n\nReady: QUALIX_Jan2024.pptx');}
+
+// ── AI AGENT ──────────────────────────────────────────────────────────────────
+let AIH=[];
+function toggleSideAI(){const p=document.getElementById('aiPanel'),c=document.getElementById('aiChev');if(!p)return;const o=p.style.display==='block';p.style.display=o?'none':'block';if(c)c.style.transform=o?'':'rotate(180deg)';}
+async function aiAsk(preset){
+  const inp=document.getElementById('aiInput'),msg=preset||inp?.value?.trim();if(!msg)return;if(inp)inp.value='';
+  const p=document.getElementById('aiPanel'),c=document.getElementById('aiChev');
+  if(p&&p.style.display!=='block'){p.style.display='block';if(c)c.style.transform='rotate(180deg)';}
+  const msgs=document.getElementById('aiMsgs');if(!msgs)return;
+  const uD=document.createElement('div');uD.style.cssText='display:flex;flex-direction:row-reverse;gap:6px;margin-bottom:8px;';
+  uD.innerHTML=`<div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#10b981,#00c8ff);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;flex-shrink:0;">${CU?CU.avatar:'MI'}</div><div style="background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(0,200,255,.2));border:1px solid rgba(0,200,255,.25);border-radius:10px 10px 3px 10px;padding:8px 10px;font-size:11px;color:#e2e8f0;line-height:1.5;max-width:85%;">${msg}</div>`;
+  msgs.appendChild(uD);
+  const tD=document.createElement('div');tD.id='aiTyp';tD.style.cssText='display:flex;gap:6px;margin-bottom:8px;';
+  tD.innerHTML=`<div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#00c8ff);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;flex-shrink:0;">AI</div><div style="background:#0f1a35;border:1px solid rgba(0,200,255,.1);border-radius:10px 10px 10px 3px;padding:8px 10px;"><div style="display:flex;gap:3px;">${[0,150,300].map(d=>`<div style="width:6px;height:6px;border-radius:50%;background:#00c8ff;animation:tB .8s ${d}ms infinite;"></div>`).join('')}<style>@keyframes tB{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}</style></div></div>`;
+  msgs.appendChild(tD);msgs.scrollTop=msgs.scrollHeight;AIH.push({role:'user',content:msg});
+  const ag=filt(AGENTS),dp=filt(DISPUTES);
+  const av=Math.round(ag.reduce((a,x)=>a+x.avg,0)/ag.length),atR=dp.filter(d=>d.hrs>24).length;
+  const sys=`QUALIX AI. Site:${SITE}. Agents:${ag.map(a=>`${a.name}(${a.site},${a.avg}%)`).join('|')} Disputes:${dp.map(d=>`${d.id}:${d.hrs}h/${d.sla}h`).join('|')} avg=${av}%,atRisk=${atR},vel=${AW}/${TW}. Max 60 words. Bold numbers with <strong>.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,system:sys,messages:AIH})});
+    const data=await res.json();document.getElementById('aiTyp')?.remove();
+    const reply=data.content?.[0]?.text||'No response.';AIH.push({role:'assistant',content:reply});addAIMsg(msgs,reply);
+  }catch{
+    document.getElementById('aiTyp')?.remove();
+    const fb=aiF(msg,av,atR,ag,dp);AIH.push({role:'assistant',content:fb});addAIMsg(msgs,fb);
+  }
+}
+function addAIMsg(msgs,text){const d=document.createElement('div');d.style.cssText='display:flex;gap:6px;margin-bottom:8px;';d.innerHTML=`<div style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#00c8ff);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;flex-shrink:0;">AI</div><div style="background:#0f1a35;border:1px solid rgba(0,200,255,.1);border-radius:10px 10px 10px 3px;padding:8px 10px;font-size:11px;color:#e2e8f0;line-height:1.5;max-width:85%;">${text.replace(/\n/g,'<br>')}</div>`;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;}
+function aiF(msg,av,atR,ag,dp){
+  const m=msg.toLowerCase();
+  if(m.includes('avg')||m.includes('score'))return`Avg: <strong>${av}%</strong>. Top: <strong>${[...ag].sort((a,b)=>b.avg-a.avg)[0].name}</strong> at ${[...ag].sort((a,b)=>b.avg-a.avg)[0].avg}%.`;
+  if(m.includes('dispute')||m.includes('risk'))return`<strong>${dp.length}</strong> disputes. <strong>${atR} breached SLA.</strong> Ben Ocampo has the most aged.`;
+  if(m.includes('manila')||m.includes('india')){const mn=Math.round(ag.filter(x=>x.site==='Manila').reduce((a,x)=>a+x.avg,0)/Math.max(1,ag.filter(x=>x.site==='Manila').length));const ind=Math.round(ag.filter(x=>x.site==='India').reduce((a,x)=>a+x.avg,0)/Math.max(1,ag.filter(x=>x.site==='India').length));return`Manila: <strong>${mn}%</strong> · India: <strong>${ind}%</strong>. ${mn>ind?'Manila':'India'} leads by ${Math.abs(mn-ind)}pts.`;}
+  if(m.includes('error'))return`Top errors: <strong>1.</strong> Missing verification (182) <strong>2.</strong> CRM not updated (145) <strong>3.</strong> Wrong policy (126)`;
+  return`Avg <strong>${av}%</strong> · <strong>${atR}</strong> at-risk · velocity <strong>${AW}/${TW}</strong>.`;
+}
+
+// ── PARTICLES (CSS only — no Three.js for faster load) ────────────────────────
+const fxc=document.getElementById('fxCanvas'),ctx2=fxc.getContext('2d');
+fxc.width=innerWidth;fxc.height=innerHeight;
+const PTS=Array.from({length:50},()=>({x:Math.random()*fxc.width,y:Math.random()*fxc.height,r:Math.random()*1.2+.3,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,a:Math.random()*.35+.1,col:['rgba(0,200,255,','rgba(124,58,237,','rgba(16,185,129,'][~~(Math.random()*3)]}));
+function drawFx(){
+  ctx2.clearRect(0,0,fxc.width,fxc.height);
+  PTS.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>fxc.width)p.vx*=-1;if(p.y<0||p.y>fxc.height)p.vy*=-1;ctx2.beginPath();ctx2.arc(p.x,p.y,p.r,0,Math.PI*2);ctx2.fillStyle=p.col+p.a+')';ctx2.fill();});
+  for(let i=0;i<PTS.length;i++)for(let j=i+1;j<PTS.length;j++){const dx=PTS[i].x-PTS[j].x,dy=PTS[i].y-PTS[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){ctx2.beginPath();ctx2.moveTo(PTS[i].x,PTS[i].y);ctx2.lineTo(PTS[j].x,PTS[j].y);ctx2.strokeStyle=`rgba(0,200,255,${.05*(1-d/100)})`;ctx2.lineWidth=.5;ctx2.stroke();}}
+  requestAnimationFrame(drawFx);
+}
+drawFx();
+window.addEventListener('resize',()=>{fxc.width=innerWidth;fxc.height=innerHeight;});
+
+showView('overview');
+</script>
+</body>
+</html>

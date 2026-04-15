@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ':*)",
+      "Bash(npm --version)",
+      "Bash(go version:*)",
+      "Bash(ruby --version)",
+      "Bash(php --version)",
+      "Bash(java --version)",
+      "Bash(dotnet --version)",
+      "Bash(deno --version)",
+      "Bash(bun --version)",
+      "Bash(npm list:*)",
+      "Bash(npx --yes express --version)",
+      "Bash(npm show:*)",
+      "Bash(pip --version)",
+      "Bash(pip3 --version)",
+      "Bash(pip show:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(node server/index.js)",
+      "Bash(curl -s http://localhost:4000/api/health)",
+      "Bash(curl -s -X POST http://localhost:4000/api/auth/login -H \"Content-Type: application/json\" -d \"{\\\\\"email\\\\\":\\\\\"alice@qualix.com\\\\\",\\\\\"password\\\\\":\\\\\"password\\\\\"}\")",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\);const j=JSON.parse\\(d\\);console.log\\('Login OK, role:',j.user?.role,'token prefix:',j.token?.slice\\(0,20\\)+'...'\\)\")",
+      "Bash(node -e \"process.stdout.write\\(require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\)\\)\")",
+      "Bash(curl -s http://localhost:4000/api/cases -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InUxIiwibmFtZSI6IkFsaWNlIE1hbmFnZXIiLCJlbWFpbCI6ImFsaWNlQHF1YWxpeC5jb20iLCJyb2xlIjoiTWFuYWdlciIsImlhdCI6MTc3NjIzMzI1OSwiZXhwIjoxNzc2MjYyMDU5fQ.dDA02hlwP7zUYk5g4fuaEe2iZ1sHTHkL1Itx_N1FUlo')",
+      "Bash(curl -s http://localhost:4000/api/stats/overview -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InUxIiwibmFtZSI6IkFsaWNlIE1hbmFnZXIiLCJlbWFpbCI6ImFsaWNlQHF1YWxpeC5jb20iLCJyb2xlIjoiTWFuYWdlciIsImlhdCI6MTc3NjIzMzI1OSwiZXhwIjoxNzc2MjYyMDU5fQ.dDA02hlwP7zUYk5g4fuaEe2iZ1sHTHkL1Itx_N1FUlo')",
+      "Bash(curl -s http://localhost:4000/api/disputes -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InUxIiwibmFtZSI6IkFsaWNlIE1hbmFnZXIiLCJlbWFpbCI6ImFsaWNlQHF1YWxpeC5jb20iLCJyb2xlIjoiTWFuYWdlciIsImlhdCI6MTc3NjIzMzI1OSwiZXhwIjoxNzc2MjYyMDU5fQ.dDA02hlwP7zUYk5g4fuaEe2iZ1sHTHkL1Itx_N1FUlo')",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npx kill-port:*)",
+      "Bash(npx localtunnel:*)",
+      "Read(//tmp/**)",
+      "Bash(curl -s https://qualix.loca.lt/api/health)",
+      "Bash(jobs -l)",
+      "Bash(curl -s --max-time 5 https://localtunnel.me)",
+      "Bash(curl -s --max-time 5 https://serveo.net)",
+      "Bash(git --version)",
+      "Bash(git config:*)",
+      "Bash(gh --version)",
+      "Bash(gh auth:*)"
+    ]
+  }
+}
